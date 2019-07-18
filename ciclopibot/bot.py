@@ -22,6 +22,10 @@ if __name__ == '__main__':
         from data.config import errors_file_name
     except ImportError:
         errors_file_name = 'CicloPi.errors.log'
+    try:
+        from data.config import local_host, port
+    except ImportError:
+        local_host, port = '127.0.0.1', 3000
     log_file = f"{path}/data/{log_file_name}"
     errors_file = f"{path}/data/{errors_file_name}"
 
@@ -65,4 +69,7 @@ if __name__ == '__main__':
     )
     # Run bot(s)
     logging.info("Presso ctrl+C to exit.")
-    Bot.run()
+    Bot.run(
+        local_host=local_host,
+        port=port
+    )
