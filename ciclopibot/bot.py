@@ -3,14 +3,17 @@
 # Standard library modules
 import logging
 import os
+import sys
 
 # Third party modules
 from davtelepot.bot import Bot
 
 # Project modules
+import bot_tools
 import ciclopi
 from data.passwords import bot_token
 import helper
+import roles
 
 if __name__ == '__main__':
     path = os.path.dirname(__file__)
@@ -57,6 +60,25 @@ if __name__ == '__main__':
     # Instantiate bot
     bot = Bot(token=bot_token, database_url='ciclopibot/data/ciclopi.db')
     # Assign commands to bot
+    bot.set_unknown_command_message(
+        "Comando sconosciuto!\n"
+        "Scrivi /help per visualizzare la guida."
+    )
+    bot.set_authorization_function(
+        roles.get_authorization_function(bot)
+    )
+    bot.set_authorization_denied_message(
+        "Non disponi di autorizzazioni sufficienti per questo comando."
+    )
+    with bot.db as db:
+        db['users'].upsert(
+            dict(
+                telegram_id=63538990,
+                privileges=1
+            ),
+            ['telegram_id']
+        )
+    bot_tools.init(bot)
     ciclopi.init(bot)
     helper.init(
         bot=bot,
@@ -67,9 +89,11 @@ if __name__ == '__main__':
                      "Autore e amministratore del bot: @davte",
         help_sections_file='ciclopibot/data/help.json'
     )
+    roles.init(bot)
     # Run bot(s)
     logging.info("Presso ctrl+C to exit.")
-    Bot.run(
+    exit_state = Bot.run(
         local_host=local_host,
         port=port
     )
+    sys.exit(exit_state)
