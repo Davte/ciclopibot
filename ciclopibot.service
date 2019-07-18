@@ -1,0 +1,11 @@
+[Unit]
+Description=ciclopibot
+
+[Service]
+WorkingDirectory=/home/ciclopi/ciclopibot/
+Restart=always
+RestartSec=30
+ExecStart=/home/ciclopi/ciclopibot/run_me.sh
+
+[Install]
+WantedBy=default.target
