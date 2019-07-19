@@ -9,11 +9,11 @@ import sys
 from davtelepot.bot import Bot
 
 # Project modules
-import bot_tools
-import ciclopi
-from data.passwords import bot_token
-import helper
-import roles
+from . import bot_tools
+from . import ciclopi
+from . import helper
+from . import roles
+from .data.passwords import bot_token
 
 if __name__ == '__main__':
     path = os.path.dirname(__file__)

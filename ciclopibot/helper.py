@@ -7,7 +7,7 @@ from davtelepot.utilities import (
 )
 
 # Project modules
-import roles
+from . import roles
 
 DENY_MESSAGE = (
     "Chiedi di essere autorizzato: se la tua richiesta verrà accolta, "
