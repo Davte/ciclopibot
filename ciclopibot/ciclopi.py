@@ -583,12 +583,15 @@ async def set_ciclopi_location(bot, update, user_record):
 async def cancel_ciclopi_location(bot, update, user_record):
     """Handle the situation in which a user does not send location on request.
 
-    This function is set as custom_parser when the bot requests user's location
-    and is removed if user does. If not, return a proper message.
+    This function is set as individual text message handler when the bot
+        requests user's location and is removed if user does send one.
+        If not, return a proper message.
     """
     text = get_cleaned_text(bot=bot, update=update)
+    # If user cancels operation, confirm that it was cancelled
     if text.lower() == 'annulla':
         return "Operazione annullata."
+    # If user writes something else, remind them how to set position later
     return (
         "Non ho capito la tua posizione. Fai /ciclopi > Ordina... > "
         "Posizione 🧭 per riprovare."
