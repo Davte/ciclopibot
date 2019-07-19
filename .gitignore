@@ -2,10 +2,13 @@
 local_*
 my_config.sh
 
-# Data folders
+# Data folder
 ciclopibot/data/*
 !ciclopibot/data/__init__.py
 !ciclopibot/data/help.json
+
+# Pictures folder (symbolic link)
+ciclopibot/img
 
 # ---> Python
 # Byte-compiled / optimized / DLL files

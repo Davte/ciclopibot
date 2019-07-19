@@ -1,3 +1,4 @@
 exclude ciclopibot/data/*
 include ciclopibot/data/__init__.py
 include ciclopibot/data/help.json
+exclude ciclopibot/img*
