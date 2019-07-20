@@ -53,6 +53,6 @@ do
   $python_virtual_environment/pip install --upgrade --no-cache-dir \
   --no-deps davtelepot;
   echo "Running python script";
-  $python_virtual_environment/python $python_script;
+  $python_virtual_environment/python -m ciclopibot.bot;
   i=$?;
 done
