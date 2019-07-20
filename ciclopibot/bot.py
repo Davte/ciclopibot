@@ -7,10 +7,9 @@ import sys
 
 # Third party modules
 import davtelepot
-from davtelepot import authorization, languages
+from davtelepot import administration_tools, authorization, languages
 
 # Project modules
-from . import bot_tools
 from . import ciclopi
 from . import helper
 from .data.passwords import bot_token
@@ -122,7 +121,7 @@ if __name__ == '__main__':
             ),
             ['telegram_id']
         )
-    bot_tools.init(bot)
+    administration_tools.init(bot, language='it')
     ciclopi.init(bot)
     helper.init(
         bot=bot,
