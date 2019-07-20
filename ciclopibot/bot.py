@@ -70,6 +70,10 @@ if __name__ == '__main__':
         from .data.config import local_host, port
     except ImportError:
         local_host, port = '127.0.0.1', 3000
+    try:
+        from .data.config import hostname, certificate
+    except ImportError:
+        hostname, certificate = '', None
     log_file = f"{path}/data/{log_file_name}"
     errors_file = f"{path}/data/{errors_file_name}"
 
@@ -100,7 +104,8 @@ if __name__ == '__main__':
 
     # Instantiate bot
     bot = davtelepot.bot.Bot(token=bot_token,
-                             database_url='ciclopibot/data/ciclopi.db')
+                             database_url='ciclopibot/data/ciclopi.db',
+                             hostname=hostname, certificate=certificate)
     # Assign commands to bot
     bot.set_unknown_command_message(
         "Comando sconosciuto!\n"
