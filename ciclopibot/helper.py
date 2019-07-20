@@ -6,9 +6,6 @@ from davtelepot.utilities import (
     make_lines_of_buttons, make_button, MyOD
 )
 
-# Project modules
-from . import roles
-
 DENY_MESSAGE = (
     "Chiedi di essere autorizzato: se la tua richiesta verrà accolta, "
     "ripeti il comando /help per leggere il messaggio di aiuto."
@@ -20,7 +17,9 @@ def get_command_description(bot, update, user_record):
 
     Show only commands available for `update` sender.
     """
-    user_role = roles.get_role(bot=bot, update=update, user_record=user_record)
+    user_role = bot.Role.get_user_role(
+        user_record=user_record
+    )
     return "\n".join(
         [
             "/{}: {}".format(
@@ -32,9 +31,9 @@ def get_command_description(bot, update, user_record):
                 key=lambda x:x[0]
                 )
             if details['description']
-            and user_role <= roles.get_privilege_code(
-                details['authorization_level']
-            )
+            and user_role.code <= bot.Role.get_user_role(
+                user_role_id=details['authorization_level']
+            ).code
         ]
     )
 
@@ -61,7 +60,9 @@ def get_help_buttons(bot, update, user_record):
 
     Show only buttons available for `update` sender.
     """
-    user_role = roles.get_role(bot=bot, update=update, user_record=user_record)
+    user_role = bot.Role.get_user_role(
+        user_record=user_record
+    )
     buttons_list = [
         _make_button(
             section['label'],
@@ -69,9 +70,9 @@ def get_help_buttons(bot, update, user_record):
         )
         for section in bot.help_sections.values()
         if 'auth' in section
-        and user_role <= roles.get_privilege_code(
-            section['auth']
-        )
+        and user_role.code <= bot.Role.get_user_role(
+            user_role_id=section['auth']
+        ).code
     ]
     return dict(
         inline_keyboard=(

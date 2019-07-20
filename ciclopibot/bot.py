@@ -6,13 +6,13 @@ import os
 import sys
 
 # Third party modules
-from davtelepot.bot import Bot
+import davtelepot
+from davtelepot import authorization
 
 # Project modules
 from . import bot_tools
 from . import ciclopi
 from . import helper
-from . import roles
 from .data.passwords import bot_token
 
 if __name__ == '__main__':
@@ -58,14 +58,12 @@ if __name__ == '__main__':
     root_logger.addHandler(consoleHandler)
 
     # Instantiate bot
-    bot = Bot(token=bot_token, database_url='ciclopibot/data/ciclopi.db')
+    bot = davtelepot.bot.Bot(token=bot_token,
+                             database_url='ciclopibot/data/ciclopi.db')
     # Assign commands to bot
     bot.set_unknown_command_message(
         "Comando sconosciuto!\n"
         "Scrivi /help per visualizzare la guida."
-    )
-    bot.set_authorization_function(
-        roles.get_authorization_function(bot)
     )
     bot.set_authorization_denied_message(
         "Non disponi di autorizzazioni sufficienti per questo comando."
@@ -89,10 +87,10 @@ if __name__ == '__main__':
                      "Autore e amministratore del bot: @davte",
         help_sections_file='ciclopibot/data/help.json'
     )
-    roles.init(bot)
+    authorization.init(bot, language='it')
     # Run bot(s)
     logging.info("Presso ctrl+C to exit.")
-    exit_state = Bot.run(
+    exit_state = davtelepot.bot.Bot.run(
         local_host=local_host,
         port=port
     )
