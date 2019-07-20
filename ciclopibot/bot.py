@@ -138,7 +138,7 @@ if __name__ == '__main__':
         supported_languages=supported_languages
     )
     # Run bot(s)
-    logging.info("Presso ctrl+C to exit.")
+    logging.info("Press ctrl+C to exit.")
     exit_state = davtelepot.bot.Bot.run(
         local_host=local_host,
         port=port
