@@ -59,15 +59,15 @@ supported_languages = {
 if __name__ == '__main__':
     path = os.path.dirname(__file__)
     try:
-        from data.config import log_file_name
+        from .data.config import log_file_name
     except ImportError:
         log_file_name = 'CicloPi.info.log'
     try:
-        from data.config import errors_file_name
+        from .data.config import errors_file_name
     except ImportError:
         errors_file_name = 'CicloPi.errors.log'
     try:
-        from data.config import local_host, port
+        from .data.config import local_host, port
     except ImportError:
         local_host, port = '127.0.0.1', 3000
     log_file = f"{path}/data/{log_file_name}"
