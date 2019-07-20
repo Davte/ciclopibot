@@ -7,13 +7,54 @@ import sys
 
 # Third party modules
 import davtelepot
-from davtelepot import authorization
+from davtelepot import authorization, languages
 
 # Project modules
 from . import bot_tools
 from . import ciclopi
 from . import helper
 from .data.passwords import bot_token
+
+language_messages = {
+    'language_command': {
+        'name': {
+            'en': "/language",
+            'it': "/lingua"
+        },
+        'alias': {
+            'en': "Language 🗣",
+            'it': "Lingua 🗣"
+        },
+        'description': {
+            'en': "Change language settings",
+            'it': "Cambia le impostazioni della lingua"
+        }
+    },
+    'language_button': {
+        'description': {
+            'en': "Change language settings",
+            'it': "Cambia le impostazioni della lingua"
+        }
+    },
+    'language_panel': {
+        'text': {
+            'en': "<b>Choose a language</b>",
+            'it': "<b>Seleziona una lingua</b>"
+        }
+    }
+}
+
+supported_languages = {
+    'en': {
+        'flag': '🇬🇧',
+        'name': 'English'
+    },
+    'it': {
+        'flag': '🇮🇹',
+        'name': 'Italiano'
+    }
+}
+
 
 if __name__ == '__main__':
     path = os.path.dirname(__file__)
@@ -88,6 +129,10 @@ if __name__ == '__main__':
         help_sections_file='ciclopibot/data/help.json'
     )
     authorization.init(bot, language='it')
+    languages.init(
+        bot, language='it', language_messages=language_messages,
+        supported_languages=supported_languages
+    )
     # Run bot(s)
     logging.info("Presso ctrl+C to exit.")
     exit_state = davtelepot.bot.Bot.run(
