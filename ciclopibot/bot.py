@@ -105,7 +105,7 @@ if __name__ == '__main__':
     bot = davtelepot.bot.Bot(token=bot_token,
                              database_url='ciclopibot/data/ciclopi.db',
                              hostname=hostname, certificate=certificate)
-    # Assign commands to bot
+    bot.set_path(path)
     bot.set_unknown_command_message(
         "Comando sconosciuto!\n"
         "Scrivi /help per visualizzare la guida."
