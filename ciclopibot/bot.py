@@ -103,7 +103,7 @@ if __name__ == '__main__':
 
     # Instantiate bot
     bot = davtelepot.bot.Bot(token=bot_token,
-                             database_url='ciclopibot/data/ciclopi.db',
+                             database_url=f'{path}/data/ciclopi.db',
                              hostname=hostname, certificate=certificate)
     bot.set_path(path)
     bot.set_unknown_command_message(
