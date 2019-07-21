@@ -24,7 +24,15 @@ def get_command_description(bot, update, user_record):
         [
             "/{}: {}".format(
                 command,
-                details['description']
+                bot.get_message(
+                    'commands', command, 'description',
+                    user_record=user_record, update=update,
+                    default_message=(
+                        details['description']
+                        if type(details['description']) is str
+                        else ''
+                    )
+                )
             )
             for command, details in sorted(
                 bot.commands.items(),
