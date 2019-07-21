@@ -121,7 +121,7 @@ if __name__ == '__main__':
             ),
             ['telegram_id']
         )
-    administration_tools.init(bot, language='it')
+    administration_tools.init(bot)
     ciclopi.init(bot)
     helper.init(
         bot=bot,
@@ -132,7 +132,7 @@ if __name__ == '__main__':
                      "Autore e amministratore del bot: @davte",
         help_sections_file='ciclopibot/data/help.json'
     )
-    authorization.init(bot, language='it')
+    authorization.init(bot)
     languages.init(
         bot, language='it', language_messages=language_messages,
         supported_languages=supported_languages
