@@ -54,6 +54,31 @@ supported_languages = {
     }
 }
 
+ciclopibot_help_messages = {
+    'help_command': {
+        'text': {
+                'en': "<b>{bot.name} guide</b>\n\n"
+                      "Welcome!\n"
+                      "To visit a guide section, press the corresponding "
+                      "button.\n"
+                      "To view all available commands, see section "
+                      "`Comandi`.\n\n"
+                      "Bot author and administrator: @Davte",
+                'it': "<b>📖 Guida di {bot.name}\n\n</b>"
+                      "Benvenuto!\n"
+                      "Per leggere una sezione della guida premi il bottone "
+                      "corrispondente. Per conoscere  tutti i comandi "
+                      "disponibili, visita l'apposita sezione della guida "
+                      "premendo il pulsante Comandi.\n\n"
+                      "Autore e amministratore del bot: @Davte"
+            },
+        'description': {
+            'en': "Help",
+            'it': "Aiuto"
+        }
+    }
+}
+
 
 if __name__ == '__main__':
     path = os.path.dirname(__file__)
@@ -125,16 +150,12 @@ if __name__ == '__main__':
     ciclopi.init(bot)
     helper.init(
         bot=bot,
-        help_message="<b>📖 Guida di {bot.name}\n\n</b>"
-                     "Benvenuto!\n"
-                     "Per conoscere i comandi disponibili visita l'apposita "
-                     "sezione della guida premendo il pulsante Comandi.\n\n"
-                     "Autore e amministratore del bot: @davte",
+        help_messages=ciclopibot_help_messages,
         help_sections_file='ciclopibot/data/help.json'
     )
     authorization.init(bot)
     languages.init(
-        bot, language='it', language_messages=language_messages,
+        bot, language_messages=language_messages,
         supported_languages=supported_languages
     )
     # Run bot(s)

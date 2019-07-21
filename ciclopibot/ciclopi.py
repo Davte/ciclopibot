@@ -15,6 +15,15 @@ from davtelepot.utilities import (
     make_lines_of_buttons
 )
 
+default_ciclopi_messages = {
+    'ciclopi_command': {
+        'description': {
+            'en': "CiloPi stations status",
+            'it': "Stato delle stazioni CicloPi"
+        }
+    }
+}
+
 _URL = "http://www.ciclopi.eu/frmLeStazioni.aspx"
 
 ciclopi_webpage = CachedPage.get(
@@ -1452,7 +1461,7 @@ async def _ciclopi_button(bot, update, user_record):
     return result
 
 
-def init(bot):
+def init(bot, ciclopi_messages=None):
     """Take a bot and assign commands to it."""
     with bot.db as db:
         if 'ciclopi_stations' not in db.tables:
@@ -1481,9 +1490,14 @@ def init(bot):
                 )
             )
 
+    if ciclopi_messages is None:
+        ciclopi_messages = default_ciclopi_messages
+
     @bot.command(command='/ciclopi', aliases=["CicloPi 🚲", "🚲 CicloPi 🔴"],
                  show_in_keyboard=True,
-                 description="Stato delle stazioni CicloPi",
+                 description=(
+                    ciclopi_messages['ciclopi_command']['description']
+                 ),
                  authorization_level='everybody')
     async def ciclopi_command(bot, update, user_record):
         return await _ciclopi_command(bot, update, user_record)

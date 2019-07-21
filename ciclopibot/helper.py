@@ -6,10 +6,25 @@ from davtelepot.utilities import (
     make_lines_of_buttons, make_button, MyOD
 )
 
-DENY_MESSAGE = (
-    "Chiedi di essere autorizzato: se la tua richiesta verrà accolta, "
-    "ripeti il comando /help per leggere il messaggio di aiuto."
-)
+default_help_messages = {
+    'help_command': {
+        'text': {
+                'en': "<b>Guide</b>",
+                'it': "<b>Guida</b>"
+            },
+        'description': {
+            'en': "Help",
+            'it': "Aiuto"
+        },
+        'access_denied_message': {
+            'en': "Ask for authorization. If your request is accepted, send "
+                  "/help command again to read the guide.",
+            'it': "Chiedi di essere autorizzato: se la tua richiesta "
+                  "verrà accolta, ripeti il comando /help per leggere "
+                  "il messaggio di aiuto."
+        }
+    }
+}
 
 
 def get_command_description(bot, update, user_record):
@@ -104,10 +119,17 @@ def get_help_buttons(bot, update, user_record):
 async def _help_command(bot, update, user_record):
     if not bot.authorization_function(update=update,
                                       authorization_level='everybody'):
-        return DENY_MESSAGE
+        return bot.get_message(
+            'help', 'help_command', 'access_denied_message',
+            update=update, user_record=user_record
+        )
     reply_markup = get_help_buttons(bot, update, user_record)
     return dict(
-        text=bot.help_message.format(bot=bot),
+        text=bot.get_message(
+            'help', 'help_command', 'text',
+            update=update, user_record=user_record,
+            bot=bot
+        ),
         parse_mode='HTML',
         reply_markup=reply_markup,
         disable_web_page_preview=True
@@ -125,7 +147,11 @@ async def _help_button(bot, update, user_record):
         )
         rm = HELP_MENU_BUTTON
     elif command == 'menu':
-        text = bot.help_message.format(bot=bot)
+        text = bot.get_message(
+            'help', 'help_command', 'text',
+            update=update, user_record=user_record,
+            bot=bot
+        )
         rm = get_help_buttons(bot, update, user_record)
     else:
         for code, section in bot.help_sections.items():
@@ -169,10 +195,12 @@ async def _start_command(bot, update, user_record):
     return
 
 
-def init(bot, help_message="<b>Guida</b>",
+def init(bot, help_messages=None,
          help_sections_file='data/help.json', help_buttons=[]):
     """Assign parsers, commands, buttons and queries to given `bot`."""
-    bot.help_message = help_message
+    if help_messages is None:
+        help_messages = default_help_messages
+    bot.messages['help'] = help_messages
     bot.help_buttons = help_buttons
     bot.help_sections = MyOD()
     for code, section in enumerate(
@@ -188,7 +216,8 @@ def init(bot, help_message="<b>Guida</b>",
         return await _start_command(bot, update, user_record)
 
     @bot.command(command='/help', aliases=['Guida 📖', '00help'],
-                 show_in_keyboard=True, description="Aiuto",
+                 show_in_keyboard=True,
+                 description=help_messages['help_command']['description'],
                  authorization_level='everybody')
     async def help_command(bot, update, user_record):
         result = await _help_command(bot, update, user_record)
