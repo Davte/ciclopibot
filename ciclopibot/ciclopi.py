@@ -530,6 +530,9 @@ def _get_stations(data, location):
             ).text.replace(
                 'a`',
                 'à'
+            ).replace(
+                'e`',
+                'è'
             )
         )
         bikes_text = _station.find(
