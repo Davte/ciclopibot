@@ -68,10 +68,10 @@ CICLOPI_SETTINGS = {
 
 CICLOPI_SORTING_CHOICES = {
     0: dict(
-        name='Scuola',
-        description='in ordine di distanza crescente da Scuola.',
-        short_description='per distanza da Scuola',
-        symbol='🏫'
+        name='Borgo',
+        description='in ordine di distanza crescente da Borgo Stretto.',
+        short_description='per distanza da Borgo Stretto',
+        symbol='🏛'
     ),
     1: dict(
         name='Alfabetico',
@@ -82,7 +82,7 @@ CICLOPI_SORTING_CHOICES = {
     2: dict(
         name='Posizione',
         description='in ordine di distanza crescente dall\'ultima posizione '
-                    'inviata. Di default sarà la posizione di Scuola.',
+                    'inviata. Di default sarà Borgo Stretto.',
         short_description='per distanza',
         symbol='🧭'
     ),
@@ -184,7 +184,7 @@ class Location():
 
 
 default_location = Location(
-    (43.719821, 10.403021)  # M. Libertà station
+    (43.718518, 10.402165)  # Borgo Stretto Station
 )
 
 

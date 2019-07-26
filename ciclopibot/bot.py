@@ -57,7 +57,7 @@ supported_languages = {
 ciclopibot_help_messages = {
     'help_command': {
         'text': {
-                'en': "<b>{bot.name} guide</b>\n\n"
+                'en': "<b>📖 {bot.name} guide</b>\n\n"
                       "Welcome!\n"
                       "To visit a guide section, press the corresponding "
                       "button.\n"
