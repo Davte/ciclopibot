@@ -131,6 +131,8 @@ if __name__ == '__main__':
                              database_url=f'{path}/data/ciclopi.db',
                              hostname=hostname, certificate=certificate)
     bot.set_path(path)
+    bot.set_class_log_file_name(log_file_name)
+    bot.set_class_errors_file_name(errors_file_name)
     bot.set_unknown_command_message(
         "Comando sconosciuto!\n"
         "Scrivi /help per visualizzare la guida."
