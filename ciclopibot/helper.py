@@ -11,7 +11,11 @@ default_help_messages = {
         'text': {
                 'en': "<b>Guide</b>",
                 'it': "<b>Guida</b>"
-            },
+        },
+        'reply_keyboard_button': {
+            'en': "Help 📖",
+            'it': "Guida 📖"
+        },
         'description': {
             'en': "Help",
             'it': "Aiuto"
@@ -215,7 +219,9 @@ def init(bot, help_messages=None,
     async def start_command(bot, update, user_record):
         return await _start_command(bot, update, user_record)
 
-    @bot.command(command='/help', aliases=['Guida 📖', '00help'],
+    @bot.command(command='/help', aliases=['Guida 📖', 'Help 📖', '00help'],
+                 reply_keyboard_button=help_messages['help_command'][
+                    'reply_keyboard_button'],
                  show_in_keyboard=True,
                  description=help_messages['help_command']['description'],
                  authorization_level='everybody')

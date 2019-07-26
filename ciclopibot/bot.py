@@ -20,6 +20,10 @@ language_messages = {
             'en': "/language",
             'it': "/lingua"
         },
+        'reply_keyboard_button': {
+            'en': "Language 🗣",
+            'it': "Lingua 🗣"
+        },
         'alias': {
             'en': "Language 🗣",
             'it': "Lingua 🗣"
@@ -33,6 +37,10 @@ language_messages = {
         'description': {
             'en': "Change language settings",
             'it': "Cambia le impostazioni della lingua"
+        },
+        'language_set': {
+            'en': "Selected language: English 🇬🇧",
+            'it': "Lingua selezionata: Italiano 🇮🇹"
         }
     },
     'language_panel': {
@@ -57,28 +65,36 @@ supported_languages = {
 ciclopibot_help_messages = {
     'help_command': {
         'text': {
-                'en': "<b>📖 {bot.name} guide</b>\n\n"
-                      "Welcome!\n"
-                      "To visit a guide section, press the corresponding "
-                      "button.\n"
-                      "To view all available commands, see section "
-                      "`Comandi`.\n\n"
-                      "Bot author and administrator: @Davte",
-                'it': "<b>📖 Guida di {bot.name}\n\n</b>"
-                      "Benvenuto!\n"
-                      "Per leggere una sezione della guida premi il bottone "
-                      "corrispondente. Per conoscere  tutti i comandi "
-                      "disponibili, visita l'apposita sezione della guida "
-                      "premendo il pulsante Comandi.\n\n"
-                      "Autore e amministratore del bot: @Davte"
-            },
+            'en': "<b>📖 {bot.name} guide</b>\n\n"
+                  "Welcome!\n"
+                  "To visit a guide section, press the corresponding button.\n"
+                  "To view all available commands, see section `Comandi`.\n\n"
+                  "Bot author and administrator: @Davte",
+            'it': "<b>📖 Guida di {bot.name}\n\n</b>"
+                  "Benvenuto!\n"
+                  "Per leggere una sezione della guida premi il bottone "
+                  "corrispondente. Per conoscere  tutti i comandi "
+                  "disponibili, visita l'apposita sezione della guida "
+                  "premendo il pulsante Comandi.\n\n"
+                  "Autore e amministratore del bot: @Davte"
+        },
+        'reply_keyboard_button': {
+            'en': "Help 📖",
+            'it': "Guida 📖"
+        },
         'description': {
             'en': "Help",
             'it': "Aiuto"
+        },
+        'access_denied_message': {
+            'en': "Ask for authorization. If your request is accepted, send "
+                  "/help command again to read the guide.",
+            'it': "Chiedi di essere autorizzato: se la tua richiesta "
+                  "verrà accolta, ripeti il comando /help per leggere "
+                  "il messaggio di aiuto."
         }
     }
 }
-
 
 if __name__ == '__main__':
     path = os.path.dirname(__file__)

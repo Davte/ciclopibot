@@ -20,6 +20,10 @@ default_ciclopi_messages = {
         'description': {
             'en': "CiloPi stations status",
             'it': "Stato delle stazioni CicloPi"
+        },
+        'reply_keyboard_button': {
+            'en': "CicloPi 🚲",
+            'it': "CicloPi 🚲"
         }
     }
 }
@@ -1497,6 +1501,8 @@ def init(bot, ciclopi_messages=None):
         ciclopi_messages = default_ciclopi_messages
 
     @bot.command(command='/ciclopi', aliases=["CicloPi 🚲", "🚲 CicloPi 🔴"],
+                 reply_keyboard_button=default_ciclopi_messages[
+                    'ciclopi_command']['reply_keyboard_button'],
                  show_in_keyboard=True,
                  description=(
                     ciclopi_messages['ciclopi_command']['description']
