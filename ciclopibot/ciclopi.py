@@ -178,6 +178,12 @@ default_ciclopi_messages = {
                 'it': "10"
             },
         }
+    },
+    'status': {
+        'not_available': {
+            'en': "Not available",
+            'it': "Non disponibile"
+        }
     }
 }
 
@@ -584,7 +590,7 @@ class Station(Location):
         It includes distance, location, available bikes and free stalls.
         """
         if self.bikes + self.free == 0:
-            bikes_and_stalls = "<i>⚠️ Non disponibile</i>"
+            bikes_and_stalls = "<i>⚠️ {{not_available}}</i>"
         else:
             bikes_and_stalls = f"🚲 {self.bikes}  |  🅿️ {self.free}"
         return (
@@ -840,7 +846,12 @@ async def _ciclopi_command(bot, update, user_record, sent_message=None,
         ).format(
             s=(
                 '\n\n'.join(
-                    station.status
+                    station.status.format(
+                        not_available=bot.get_message(
+                            'ciclopi', 'status', 'not_available',
+                            user_record=user_record, update=update
+                        )
+                    )
                     for station in stations
                 ) if len(stations)
                 else "<i>- Nessuna stazione -</i>"
