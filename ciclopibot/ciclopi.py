@@ -306,11 +306,6 @@ class Location():
         )
 
 
-default_location = Location(
-    (43.718518, 10.402165)  # Borgo Stretto Station
-)
-
-
 class Station(Location):
     """CicloPi bike sharing station."""
 
@@ -1631,8 +1626,21 @@ async def _ciclopi_button(bot, update, user_record):
     return result
 
 
-def init(bot, ciclopi_messages=None):
-    """Take a bot and assign commands to it."""
+def init(bot, ciclopi_messages=None, _default_location=(43.718518, 10.402165)):
+    """Take a bot and assign CicloPi-related commands to it.
+
+    `ciclopi_messages` : dict
+        Multilanguage dictionary with all CicloPi-related messages.
+
+    `default_location` : tuple (float, float)
+        Tuple of coordinates (latitude, longitude) of default location.
+        Defaults to Borgo Stretto CicloPi station.
+    """
+    # Define a global `default_location` variable holding default location
+    global default_location
+    default_location = Location(_default_location)
+    bot.ciclopi_default_location = default_location
+
     with bot.db as db:
         if 'ciclopi_stations' not in db.tables:
             db['ciclopi_stations'].insert_many(
