@@ -24,6 +24,7 @@ default_ciclopi_messages = {
         'reply_keyboard_button': {
             'en': "CicloPi 🚲",
             'it': "CicloPi 🚲"
+        },
         }
     },
     'settings': {
@@ -183,6 +184,26 @@ default_ciclopi_messages = {
         'not_available': {
             'en': "Not available",
             'it': "Non disponibile"
+        }
+    'set_position': {
+        'success': {
+            'en': "Position set!\n"
+                  "From now on, stations will be sorted by distance from "
+                  "this position.",
+            'it': "Ho salvato questa posizione!\n"
+                  "D'ora in poi ordinerò le stazioni dalla più vicina alla "
+                  "più lontana da qui."
+        },
+        'cancel': {
+            'en': "Operation cancelled.",
+            'it': "Operazione annullata."
+        },
+        'cancel_and_remind': {
+            'en': "I could not understand your position.\n"
+                  "Try again with /ciclopi > Settings > Set location",
+            'it': "Non ho capito la tua posizione.\n"
+                  "Per riprovare fai "
+                  "/ciclopi > Impostazioni > Cambia posizione"
         }
     }
 }
@@ -705,10 +726,9 @@ async def set_ciclopi_location(bot, update, user_record):
         )
     await bot.send_message(
         chat_id=chat_id,
-        text=(
-            "Ho salvato questa posizione!\n"
-            "D'ora in poi ordinerò le stazioni dalla più vicina alla più "
-            "lontana da qui."
+        text=bot.get_message(
+            'ciclopi', 'set_position', 'success',
+            update=update, user_record=user_record
         )
     )
     # Remove individual text message handler which was set to catch `/cancel`
@@ -726,11 +746,14 @@ async def cancel_ciclopi_location(bot, update, user_record):
     text = get_cleaned_text(bot=bot, update=update)
     # If user cancels operation, confirm that it was cancelled
     if text.lower() == 'annulla':
-        return "Operazione annullata."
+        return bot.get_message(
+            'ciclopi', 'set_position', 'cancel',
+            update=update, user_record=user_record
+        )
     # If user writes something else, remind them how to set position later
-    return (
-        "Non ho capito la tua posizione. Fai /ciclopi > Ordina... > "
-        "Posizione 🧭 per riprovare."
+    return bot.get_message(
+        'ciclopi', 'set_position', 'cancel_and_remind',
+        update=update, user_record=user_record
     )
 
 
@@ -849,7 +872,7 @@ async def _ciclopi_command(bot, update, user_record, sent_message=None,
                     station.status.format(
                         not_available=bot.get_message(
                             'ciclopi', 'status', 'not_available',
-                            user_record=user_record, update=update
+                            update=update, user_record=user_record
                         )
                     )
                     for station in stations
@@ -861,7 +884,7 @@ async def _ciclopi_command(bot, update, user_record, sent_message=None,
                 'ciclopi', 'sorting',
                 CICLOPI_SORTING_CHOICES[sorting_code]['id'],
                 'short_description',
-                user_record=user_record, update=update
+                update=update, user_record=user_record
             ),
             lim=(
                 " ({adv} le preferite)".format(
@@ -951,15 +974,15 @@ async def _ciclopi_button_main(bot, update, user_record, arguments):
             "- {symbol} {name}: {description}".format(
                 symbol=bot.get_message(
                     'ciclopi', 'settings', setting, 'symbol',
-                    user_record=user_record, update=update
+                    update=update, user_record=user_record
                 ),
                 name=bot.get_message(
                     'ciclopi', 'settings', setting, 'name',
-                    user_record=user_record, update=update
+                    update=update, user_record=user_record
                 ),
                 description=bot.get_message(
                     'ciclopi', 'settings', setting, 'description',
-                    user_record=user_record, update=update
+                    update=update, user_record=user_record
                 )
             )
             for setting in bot.messages['ciclopi']['settings']
@@ -971,11 +994,11 @@ async def _ciclopi_button_main(bot, update, user_record, arguments):
                 text="{symbol} {name}".format(
                     symbol=bot.get_message(
                         'ciclopi', 'settings', setting, 'symbol',
-                        user_record=user_record, update=update
+                        update=update, user_record=user_record
                     ),
                     name=bot.get_message(
                         'ciclopi', 'settings', setting, 'name',
-                        user_record=user_record, update=update
+                        update=update, user_record=user_record
                     )
                 ),
                 prefix='ciclopi:///',
@@ -1039,11 +1062,11 @@ async def _ciclopi_button_sort(bot, update, user_record, arguments):
                 symbol=choice['symbol'],
                 name=bot.get_message(
                     'ciclopi', 'sorting', choice['id'], 'name',
-                    user_record=user_record, update=update
+                    update=update, user_record=user_record
                 ),
                 description=bot.get_message(
                     'ciclopi', 'sorting', choice['id'], 'description',
-                    user_record=user_record, update=update
+                    update=update, user_record=user_record
                 )
             )
             for choice in CICLOPI_SORTING_CHOICES.values()
@@ -1061,7 +1084,7 @@ async def _ciclopi_button_sort(bot, update, user_record, arguments):
                     ),
                     name=bot.get_message(
                         'ciclopi', 'sorting', choice['id'], 'name',
-                        user_record=user_record, update=update
+                        update=update, user_record=user_record
                     )
                 ),
                 prefix='ciclopi:///',
@@ -1131,7 +1154,7 @@ async def _ciclopi_button_limit(bot, update, user_record, arguments):
                 symbol=choice['symbol'],
                 name=bot.get_message(
                     'ciclopi', 'filters', choice['id'], 'name',
-                    user_record=user_record, update=update
+                    update=update, user_record=user_record
                 )
             )
             for choice in CICLOPI_STATIONS_TO_SHOW.values()
@@ -1144,7 +1167,7 @@ async def _ciclopi_button_limit(bot, update, user_record, arguments):
                     symbol=choice['symbol'],
                     name=bot.get_message(
                         'ciclopi', 'filters', choice['id'], 'name',
-                        user_record=user_record, update=update
+                        update=update, user_record=user_record
                     ),
                     s=(
                         '✅'
