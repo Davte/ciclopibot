@@ -274,6 +274,28 @@ default_ciclopi_messages = {
         'back_to_stations': {
             'en': "Back to stations",
             'it': "Torna alle stazioni"
+        },
+        'legend': {
+            'name': {
+                'en': "Station name",
+                'it': "Nome della stazione",
+            },
+            'distance': {
+                'en': "Distance in meters",
+                'it': "Distanza in m",
+            },
+            'description': {
+                'en': "Station address",
+                'it': "Indirizzo della stazione",
+            },
+            'bikes': {
+                'en': "Available bikes",
+                'it': "Bici disponibili",
+            },
+            'free': {
+                'en': "Free parking stalls",
+                'it': "Posti liberi",
+            }
         }
     }
 }
@@ -1163,6 +1185,8 @@ async def _ciclopi_button_main(bot, update, user_record, arguments):
     )
     return result, text, reply_markup
 
+# TODO: Multilanguage support from this line
+
 
 async def _ciclopi_button_sort(bot, update, user_record, arguments):
     result, text, reply_markup = '', '', None
@@ -1353,15 +1377,15 @@ async def _ciclopi_button_legend(bot, update, user_record, arguments):
         "<code>  </code>🚲 {s[bikes]}  |  🅿️ {s[free]}  | 📍 {s[distance]}"
     ).format(
         s={
-            'name': "Nome della stazione",
-            'distance': "Distanza in m",
-            'description': "Indirizzo della stazione",
-            'bikes': "Bici disponibili",
-            'free': "Posti liberi"
+            key: bot.get_message(
+                'ciclopi', 'button', 'legend', key,
+                update=update, user_record=user_record
+            )
+            for key in ('name', 'distance', 'description', 'bikes', 'free')
         }
     )
     reply_markup = make_inline_keyboard(
-        + get_menu_back_buttons(
+        get_menu_back_buttons(
             bot=bot, update=update, user_record=user_record,
             include_back_to_settings=True
         )
@@ -1680,18 +1704,10 @@ async def _ciclopi_button_favorites(bot, update, user_record, arguments):
                 )
             ]
         ] + [
-            [
-                make_button(
-                    text="⚙️ Torna alle impostazioni",
-                    prefix='ciclopi:///',
-                    data=['main']
-                ),
-                make_button(
-                    text="🚲 Torna alle stazioni",
-                    prefix='ciclopi:///',
-                    data=['show']
-                )
-            ]
+            get_menu_back_buttons(
+                bot=bot, update=update, user_record=user_record,
+                include_back_to_settings=True
+            )
         ]
     )
     return result, text, reply_markup
