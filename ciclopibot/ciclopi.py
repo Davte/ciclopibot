@@ -25,6 +25,49 @@ default_ciclopi_messages = {
             'en': "CicloPi 🚲",
             'it': "CicloPi 🚲"
         },
+        'updating': {
+            'en': "Updating",
+            'it': "Aggiornamento in corso",
+        },
+        'unavailable_website': {
+            'en': "CicloPi's website cannot be reached at the moment.\n"
+                  "Please retry later :/",
+            'it': "Il sito del CicloPi è momentaneamente irraggiungibile.\n"
+                  "Riprova tra un po' :/"
+        },
+        'no_station_available': {
+            'en': "No station available",
+            'it': "Nessuna stazione"
+        },
+        'title': {
+            'en': "CicloPi stations",
+            'it': "Stazioni CicloPi"
+        },
+        'buttons': {
+            'all': {
+                'en': "All",
+                'it': "Tutte"
+            },
+            'only_fav': {
+                'en': "Favourites only",
+                'it': "Solo preferite"
+            },
+            'first_n': {
+                'en': "First {n}",
+                'it': "Prime {n}"
+            },
+            'update': {
+                'en': "🔄 Update",
+                'it': "🔄 Aggiorna"
+            },
+            'legend': {
+                'en': "📜 Legend",
+                'it': "📜 Legenda"
+            },
+            'settings': {
+                'en': "⚙️ Settings",
+                'it': "⚙️ Impostazioni"
+            },
         }
     },
     'settings': {
@@ -154,6 +197,18 @@ default_ciclopi_messages = {
                 'en': "Only favourite stations",
                 'it': "Solo le preferite"
             },
+            'all': {
+                'en': "favourite stations first",
+                'it': "prima le preferite"
+            },
+            'only': {
+                'en': "only favourite stations",
+                'it': "solo le preferite"
+            }
+        },
+        'num': {
+            'en': "first {n}",
+            'it': "prime {n}"
         },
         'all': {
             'name': {
@@ -185,6 +240,7 @@ default_ciclopi_messages = {
             'en': "Not available",
             'it': "Non disponibile"
         }
+    },
     'set_position': {
         'success': {
             'en': "Position set!\n"
@@ -204,6 +260,20 @@ default_ciclopi_messages = {
             'it': "Non ho capito la tua posizione.\n"
                   "Per riprovare fai "
                   "/ciclopi > Impostazioni > Cambia posizione"
+        }
+    },
+    'button': {
+        'title': {
+            'en': "CicloPi Settings",
+            'it': "Impostazioni CicloPi"
+        },
+        'back_to_settings': {
+            'en': "Back to settings",
+            'it': "Torna alle impostazioni"
+        },
+        'back_to_stations': {
+            'en': "Back to stations",
+            'it': "Torna alle stazioni"
         }
     }
 }
@@ -769,15 +839,20 @@ async def _ciclopi_command(bot, update, user_record, sent_message=None,
     else:
         await bot.edit_message_text(
             update=sent_message,
-            text="<i>Aggiornamento in corso...</i>",
+            text="<i>{message}...</i>".format(
+                message=bot.get_message(
+                    'ciclopi', 'command', 'updating',
+                    update=update, user_record=user_record
+                )
+            ),
             parse_mode='HTML',
             reply_markup=None
         )
     ciclopi_data = await ciclopi_webpage.get_page()
     if ciclopi_data is None or isinstance(ciclopi_data, Exception):
-        text = (
-            "Il sito del CicloPi è momentaneamente irraggiungibile, "
-            "riprova tra un po' :/"
+        text = bot.get_message(
+            'ciclopi', 'command', 'unavailable_website',
+            update=update, user_record=user_record
         )
     else:
         with bot.db as db:
@@ -861,13 +936,41 @@ async def _ciclopi_command(bot, update, user_record, sent_message=None,
             and not show_all
         ):
             stations = stations[:stations_to_show]
+        filter_label = ""
+        if stations_to_show == -1:
+            filter_label = bot.get_message(
+                'ciclopi', 'filters', 'fav', 'all' if show_all else 'only',
+                update=update, user_record=user_record
+            )
+        elif len(stations) < len(Station.stations):
+            filter_label = bot.get_message(
+                'ciclopi', 'filters', 'num',
+                update=update, user_record=user_record,
+                n=stations_to_show
+            )
+        if filter_label:
+            filter_label = ' ({label})'.format(
+                label=filter_label
+            )
         text = (
-            "🚲 Stazioni ciclopi {order}"
-            "{lim} {sort[symbol]}\n"
+            "🚲 {title} {order}"
+            "{filter} {sort[symbol]}\n"
             "\n"
-            "{s}"
+            "{stations_list}"
         ).format(
-            s=(
+            title=bot.get_message(
+                'ciclopi', 'command', 'title',
+                update=update, user_record=user_record
+            ),
+            sort=CICLOPI_SORTING_CHOICES[sorting_code],
+            order=bot.get_message(
+                'ciclopi', 'sorting',
+                CICLOPI_SORTING_CHOICES[sorting_code]['id'],
+                'short_description',
+                update=update, user_record=user_record
+            ),
+            filter=filter_label,
+            stations_list=(
                 '\n\n'.join(
                     station.status.format(
                         not_available=bot.get_message(
@@ -877,25 +980,13 @@ async def _ciclopi_command(bot, update, user_record, sent_message=None,
                     )
                     for station in stations
                 ) if len(stations)
-                else "<i>- Nessuna stazione -</i>"
-            ),
-            sort=CICLOPI_SORTING_CHOICES[sorting_code],
-            order=bot.get_message(
-                'ciclopi', 'sorting',
-                CICLOPI_SORTING_CHOICES[sorting_code]['id'],
-                'short_description',
-                update=update, user_record=user_record
-            ),
-            lim=(
-                " ({adv} le preferite)".format(
-                    adv='prima' if show_all else 'solo'
-                ) if stations_to_show == -1
-                else " (prime {n})".format(
-                    n=stations_to_show
+                else "<i>- {message} -</i>".format(
+                    message=bot.get_message(
+                        'ciclopi', 'command', 'no_station_available',
+                        update=update, user_record=user_record
+                    )
                 )
-                if len(stations) < len(Station.stations)
-                else ""
-            )
+            ),
         )
     if not text:
         return
@@ -903,19 +994,29 @@ async def _ciclopi_command(bot, update, user_record, sent_message=None,
         (
             [
                 make_button(
-                    "💯 Tutte",
+                    text="💯 {message}".format(
+                        message=bot.get_message(
+                            'ciclopi', 'command', 'buttons', 'all',
+                            update=update, user_record=user_record
+                        )
+                    ),
                     prefix='ciclopi:///',
                     data=['show', 'all']
                 )
             ] if len(stations) < len(Station.stations)
             else [
                 make_button(
-                    "{sy} {t}".format(
-                        t=(
-                            "Solo preferite" if stations_to_show == -1
-                            else "Prime {n}"
-                        ).format(
+                    "{sy} {message}".format(
+                        message=(
+                            bot.get_message(
+                                'ciclopi', 'command', 'buttons', 'only_fav',
+                                update=update, user_record=user_record
+                            ) if stations_to_show == -1
+                            else bot.get_message(
+                                'ciclopi', 'command', 'buttons', 'first_n',
+                                update=update, user_record=user_record,
                                 n=stations_to_show
+                            )
                         ),
                         sy=CICLOPI_STATIONS_TO_SHOW[stations_to_show]['symbol']
                     ),
@@ -926,7 +1027,10 @@ async def _ciclopi_command(bot, update, user_record, sent_message=None,
             else []
         ) + [
             make_button(
-                "🔄 Aggiorna",
+                text=bot.get_message(
+                    'ciclopi', 'command', 'buttons', 'update',
+                    update=update, user_record=user_record
+                ),
                 prefix='ciclopi:///',
                 data=(
                     ['show'] + (
@@ -936,12 +1040,18 @@ async def _ciclopi_command(bot, update, user_record, sent_message=None,
                 )
             ),
             make_button(
-                "📜 Legenda",
+                text=bot.get_message(
+                    'ciclopi', 'command', 'buttons', 'legend',
+                    update=update, user_record=user_record
+                ),
                 prefix='ciclopi:///',
                 data=['legend']
             ),
             make_button(
-                "⚙️ Impostazioni",
+                text=bot.get_message(
+                    'ciclopi', 'command', 'buttons', 'settings',
+                    update=update, user_record=user_record
+                ),
                 prefix='ciclopi:///',
                 data=['main']
             )
@@ -963,14 +1073,55 @@ async def _ciclopi_command(bot, update, user_record, sent_message=None,
     return
 
 
+def get_menu_back_buttons(bot, update, user_record,
+                          include_back_to_settings=True):
+    """Return a list of menu buttons to navigate back in the menu.
+
+    `include_back_to_settings` : Bool
+        Set it to True to include a 'back to settings' menu button.
+    """
+    if include_back_to_settings:
+        buttons = [
+            make_button(
+                text="⚙️ {message}".format(
+                    message=bot.get_message(
+                        'ciclopi', 'button', 'back_to_settings',
+                        update=update, user_record=user_record
+                    )
+                ),
+                prefix='ciclopi:///',
+                data=['main']
+            )
+        ]
+    else:
+        buttons = []
+    buttons += [
+        make_button(
+            text="🚲 {message}".format(
+                message=bot.get_message(
+                    'ciclopi', 'button', 'back_to_stations',
+                    update=update, user_record=user_record
+                )
+            ),
+            prefix='ciclopi:///',
+            data=['show']
+        )
+    ]
+    return buttons
+
+
 async def _ciclopi_button_main(bot, update, user_record, arguments):
     result, text, reply_markup = '', '', None
     text = (
-        "⚙️ Impostazioni CicloPi 🚲\n"
+        "⚙️ {settings_title} 🚲\n"
         "\n"
-        "{c}"
+        "{settings_list}"
     ).format(
-        c='\n'.join(
+        settings_title=bot.get_message(
+            'ciclopi', 'button', 'title',
+            update=update, user_record=user_record
+        ),
+        settings_list='\n'.join(
             "- {symbol} {name}: {description}".format(
                 symbol=bot.get_message(
                     'ciclopi', 'settings', setting, 'symbol',
@@ -1005,13 +1156,10 @@ async def _ciclopi_button_main(bot, update, user_record, arguments):
                 data=[setting]
             )
             for setting in bot.messages['ciclopi']['settings']
-        ] + [
-            make_button(
-                text="🚲 Torna alle stazioni",
-                prefix='ciclopi:///',
-                data=['show']
-            )
-        ]
+        ] + get_menu_back_buttons(
+            bot=bot, update=update, user_record=user_record,
+            include_back_to_settings=False
+        )
     )
     return result, text, reply_markup
 
@@ -1091,18 +1239,10 @@ async def _ciclopi_button_sort(bot, update, user_record, arguments):
                 data=['sort', code]
             )
             for code, choice in CICLOPI_SORTING_CHOICES.items()
-        ] + [
-            make_button(
-                text="⚙️ Torna alle impostazioni",
-                prefix='ciclopi:///',
-                data=['main']
-            ),
-            make_button(
-                text="🚲 Torna alle stazioni",
-                prefix='ciclopi:///',
-                data=['show']
-            )
-        ]
+        ] + get_menu_back_buttons(
+            bot=bot, update=update, user_record=user_record,
+            include_back_to_settings=True
+        )
     )
     return result, text, reply_markup
 
@@ -1179,18 +1319,10 @@ async def _ciclopi_button_limit(bot, update, user_record, arguments):
                 data=['limit', code]
             )
             for code, choice in CICLOPI_STATIONS_TO_SHOW.items()
-        ] + [
-            make_button(
-                text="⚙️ Torna alle impostazioni",
-                prefix='ciclopi:///',
-                data=['main']
-            ),
-            make_button(
-                text="🚲 Torna alle stazioni",
-                prefix='ciclopi:///',
-                data=['show']
-            )
-        ]
+        ] + get_menu_back_buttons(
+            bot=bot, update=update, user_record=user_record,
+            include_back_to_settings=True
+        )
     )
     return result, text, reply_markup
 
@@ -1229,18 +1361,10 @@ async def _ciclopi_button_legend(bot, update, user_record, arguments):
         }
     )
     reply_markup = make_inline_keyboard(
-        [
-            make_button(
-                text="⚙️ Torna alle impostazioni",
-                prefix='ciclopi:///',
-                data=['main']
-            ),
-            make_button(
-                text="🚲 Torna alle stazioni",
-                prefix='ciclopi:///',
-                data=['show']
-            )
-        ]
+        + get_menu_back_buttons(
+            bot=bot, update=update, user_record=user_record,
+            include_back_to_settings=True
+        )
     )
     return result, text, reply_markup
 
@@ -1344,18 +1468,11 @@ async def _ciclopi_button_favorites_add(bot, update, user_record, arguments,
                     text="🔃 Riordina",
                     prefix="ciclopi:///",
                     data=["fav"]
-                ),
-                make_button(
-                    text="⚙️ Torna alle impostazioni",
-                    prefix='ciclopi:///',
-                    data=['main']
-                ),
-                make_button(
-                    text="🚲 Torna alle stazioni",
-                    prefix='ciclopi:///',
-                    data=['show']
                 )
-            ],
+            ] + get_menu_back_buttons(
+                bot=bot, update=update, user_record=user_record,
+                include_back_to_settings=True
+            ),
             3
         )
     )
