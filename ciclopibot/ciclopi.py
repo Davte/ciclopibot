@@ -16,7 +16,7 @@ from davtelepot.utilities import (
 )
 
 default_ciclopi_messages = {
-    'ciclopi_command': {
+    'command': {
         'description': {
             'en': "CiloPi stations status",
             'it': "Stato delle stazioni CicloPi"
@@ -24,6 +24,66 @@ default_ciclopi_messages = {
         'reply_keyboard_button': {
             'en': "CicloPi 🚲",
             'it': "CicloPi 🚲"
+        }
+    },
+    'settings': {
+        'sort': {
+            'name': {
+                'en': "Order",
+                'it': "Ordina"
+            },
+            'description': {
+                'en': "customize CicloPi stations viewing order.",
+                'it': "scegli in che ordine visualizzare le stazioni CicloPi."
+            },
+            'symbol': {
+                'en': "⏬",
+                'it': "⏬"
+            }
+        },
+        'limit': {
+            'name': {
+                'en': "Number of stations",
+                'it': "Numero di stazioni"
+            },
+            'description': {
+                'en': "choose how many stations you want to view.",
+                'it': "scegli quante stazioni visualizzare."
+            },
+            'symbol': {
+                'en': "#️⃣",
+                'it': "#️⃣"
+            }
+        },
+        'fav': {
+            'name': {
+                'en': "Favourite stations",
+                'it': "Stazioni preferite"
+            },
+            'description': {
+                'en': "edit favourite stations.",
+                'it': "cambia le tue stazioni preferite."
+            },
+            'symbol': {
+                'en': "⭐️",
+                'it': "⭐️"
+            }
+        },
+        'setpos': {
+            'name': {
+                'en': "Set location",
+                'it': "Cambia posizione",
+            },
+            'description': {
+                'en': "set a location from which stations may be sorted by "
+                      "distance.",
+                'it': "imposta una posizione da cui ordinare le stazioni per "
+                      "distanza."
+                     },
+            'symbol': {
+                'en': "🧭",
+                'it': "🧭"
+            }
         }
     }
 }
@@ -43,31 +103,6 @@ UNIT_TO_KM = {
     'nmi': 0.539956803,
     'ft': 3280.839895013,
     'in': 39370.078740158
-}
-
-CICLOPI_SETTINGS = {
-    'sort': dict(
-        name="Ordina",
-        description="scegli in che ordine visualizzare le stazioni CicloPi.",
-        symbol="⏬"
-    ),
-    'limit': dict(
-        name="Numero di stazioni",
-        description="scegli quante stazioni visualizzare.",
-        symbol="#️⃣"
-    ),
-    'fav': dict(
-        name="Stazioni preferite",
-        description="cambia le tue stazioni preferite.",
-        symbol="⭐️"
-    ),
-    'setpos': dict(
-        name="Cambia posizione",
-        description=(
-            "imposta una posizione da cui ordinare le stazioni per distanza."
-        ),
-        symbol='🧭'
-    )
 }
 
 CICLOPI_SORTING_CHOICES = {
@@ -817,22 +852,40 @@ async def _ciclopi_button_main(bot, update, user_record, arguments):
         "{c}"
     ).format(
         c='\n'.join(
-            "- {s[symbol]} {s[name]}: {s[description]}".format(
-                s=setting
+            "- {symbol} {name}: {description}".format(
+                symbol=bot.get_message(
+                    'ciclopi', 'settings', setting, 'symbol',
+                    user_record=user_record, update=update
+                ),
+                name=bot.get_message(
+                    'ciclopi', 'settings', setting, 'name',
+                    user_record=user_record, update=update
+                ),
+                description=bot.get_message(
+                    'ciclopi', 'settings', setting, 'description',
+                    user_record=user_record, update=update
+                )
             )
-            for setting in CICLOPI_SETTINGS.values()
+            for setting in bot.messages['ciclopi']['settings']
         )
     )
     reply_markup = make_inline_keyboard(
         [
             make_button(
-                text="{s[symbol]} {s[name]}".format(
-                    s=setting
+                text="{symbol} {name}".format(
+                    symbol=bot.get_message(
+                        'ciclopi', 'settings', setting, 'symbol',
+                        user_record=user_record, update=update
+                    ),
+                    name=bot.get_message(
+                        'ciclopi', 'settings', setting, 'name',
+                        user_record=user_record, update=update
+                    )
                 ),
                 prefix='ciclopi:///',
-                data=[code]
+                data=[setting]
             )
-            for code, setting in CICLOPI_SETTINGS.items()
+            for setting in bot.messages['ciclopi']['settings']
         ] + [
             make_button(
                 text="🚲 Torna alle stazioni",
@@ -1499,13 +1552,15 @@ def init(bot, ciclopi_messages=None):
 
     if ciclopi_messages is None:
         ciclopi_messages = default_ciclopi_messages
+    bot.messages['ciclopi'] = ciclopi_messages
 
     @bot.command(command='/ciclopi', aliases=["CicloPi 🚲", "🚲 CicloPi 🔴"],
-                 reply_keyboard_button=ciclopi_messages[
-                    'ciclopi_command']['reply_keyboard_button'],
+                 reply_keyboard_button=(
+                    bot.messages['ciclopi']['command']['reply_keyboard_button']
+                ),
                  show_in_keyboard=True,
                  description=(
-                    ciclopi_messages['ciclopi_command']['description']
+                    bot.messages['ciclopi']['command']['description']
                  ),
                  authorization_level='everybody')
     async def ciclopi_command(bot, update, user_record):
