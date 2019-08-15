@@ -146,6 +146,38 @@ default_ciclopi_messages = {
                 'it': "in ordine personalizzato"
             },
         }
+    },
+    'filters': {
+        'fav': {
+            'name': {
+                'en': "Only favourite stations",
+                'it': "Solo le preferite"
+            },
+        },
+        'all': {
+            'name': {
+                'en': "All stations",
+                'it': "Tutte"
+            },
+        },
+        '3': {
+            'name': {
+                'en': "3",
+                'it': "3"
+            },
+        },
+        '5': {
+            'name': {
+                'en': "5",
+                'it': "5"
+            },
+        },
+        '10': {
+            'name': {
+                'en': "10",
+                'it': "10"
+            },
+        }
     }
 }
 
@@ -187,23 +219,23 @@ CICLOPI_SORTING_CHOICES = {
 
 CICLOPI_STATIONS_TO_SHOW = {
     -1: dict(
-        name="Solo le preferite",
+        id='fav',
         symbol='⭐️'
     ),
     0: dict(
-        name='Tutte',
+        id='all',
         symbol='💯'
     ),
     3: dict(
-        name='3',
+        id='3',
         symbol='3️⃣'
     ),
     5: dict(
-        name='5',
+        id='5',
         symbol='5️⃣'
     ),
     10: dict(
-        name='10',
+        id='10',
         symbol='🔟'
     )
 }
@@ -849,14 +881,14 @@ async def _ciclopi_command(bot, update, user_record, sent_message=None,
             ] if len(stations) < len(Station.stations)
             else [
                 make_button(
-                    "{sy[symbol]} {t}".format(
+                    "{sy} {t}".format(
                         t=(
                             "Solo preferite" if stations_to_show == -1
                             else "Prime {n}"
                         ).format(
                                 n=stations_to_show
                         ),
-                        sy=CICLOPI_STATIONS_TO_SHOW[stations_to_show]
+                        sy=CICLOPI_STATIONS_TO_SHOW[stations_to_show]['symbol']
                     ),
                     prefix='ciclopi:///',
                     data=['show']
@@ -1089,8 +1121,12 @@ async def _ciclopi_button_limit(bot, update, user_record, arguments):
         "alle impostazioni o all'elenco delle stazioni."
     ).format(
         options='\n'.join(
-            "- {c[symbol]} {c[name]}".format(
-                c=choice
+            "- {symbol} {name}".format(
+                symbol=choice['symbol'],
+                name=bot.get_message(
+                    'ciclopi', 'filters', choice['id'], 'name',
+                    user_record=user_record, update=update
+                )
             )
             for choice in CICLOPI_STATIONS_TO_SHOW.values()
         )
@@ -1098,8 +1134,12 @@ async def _ciclopi_button_limit(bot, update, user_record, arguments):
     reply_markup = make_inline_keyboard(
         [
             make_button(
-                text="{s} {c[name]} {c[symbol]}".format(
-                    c=choice,
+                text="{s} {name} {symbol}".format(
+                    symbol=choice['symbol'],
+                    name=bot.get_message(
+                        'ciclopi', 'filters', choice['id'], 'name',
+                        user_record=user_record, update=update
+                    ),
                     s=(
                         '✅'
                         if code == ciclopi_record['stations_to_show']
