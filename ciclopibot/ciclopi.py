@@ -85,6 +85,67 @@ default_ciclopi_messages = {
                 'it': "🧭"
             }
         }
+    },
+    'sorting': {
+        'center': {
+            'name': {
+                'en': "City center",
+                'it': "Borgo"
+            },
+            'description': {
+                'en': "sorted by distance from city center (Borgo Stretto "
+                      " station.)",
+                'it': "in ordine di distanza crescente da Borgo Stretto."
+            },
+            'short_description': {
+                'en': "by distance from city center",
+                'it': "per distanza da Borgo Stretto"
+            }
+        },
+        'alphabetical': {
+            'name': {
+                'en': "Alphabetical",
+                'it': "Alfabetico"
+            },
+            'description': {
+                'en': "in alphabetical order.",
+                'it': "in ordine alfabetico."
+            },
+            'short_description': {
+                'en': "by name",
+                'it': "per nome"
+            }
+        },
+        'position': {
+            'name': {
+                'en': "Position",
+                'it': "Posizione"
+            },
+            'description': {
+                'en': "sorted by distance from last set position. "
+                      "City center position is set by default.",
+                'it': "in ordine di distanza crescente dall'ultima posizione "
+                      "inviata. Di default sarà Borgo Stretto."
+            },
+            'short_description': {
+                'en': "by distance",
+                'it': "per distanza"
+            }
+        },
+        'custom': {
+            'name': {
+                'en': "Favourites",
+                'it': "Preferite"
+            },
+            'description': {
+                'en': "sorted by custom order.",
+                'it': "nell'ordine che hai scelto."
+            },
+            'short_description': {
+                'en': "customly ordered",
+                'it': "in ordine personalizzato"
+            },
+        }
     }
 }
 
@@ -107,28 +168,19 @@ UNIT_TO_KM = {
 
 CICLOPI_SORTING_CHOICES = {
     0: dict(
-        name='Borgo',
-        description='in ordine di distanza crescente da Borgo Stretto.',
-        short_description='per distanza da Borgo Stretto',
+        id='center',
         symbol='🏛'
     ),
     1: dict(
-        name='Alfabetico',
-        description='in ordine alfabetico.',
-        short_description='per nome',
+        id='alphabetical',
         symbol='🔤'
     ),
     2: dict(
-        name='Posizione',
-        description='in ordine di distanza crescente dall\'ultima posizione '
-                    'inviata. Di default sarà Borgo Stretto.',
-        short_description='per distanza',
+        id='position',
         symbol='🧭'
     ),
     3: dict(
-        name='Preferite',
-        description='nell\'ordine che hai scelto.',
-        short_description='in ordine personalizzato',
+        id='custom',
         symbol='⭐️'
     )
 }
@@ -754,7 +806,7 @@ async def _ciclopi_command(bot, update, user_record, sent_message=None,
         ):
             stations = stations[:stations_to_show]
         text = (
-            "🚲 Stazioni ciclopi {sort[short_description]}"
+            "🚲 Stazioni ciclopi {order}"
             "{lim} {sort[symbol]}\n"
             "\n"
             "{s}"
@@ -767,6 +819,12 @@ async def _ciclopi_command(bot, update, user_record, sent_message=None,
                 else "<i>- Nessuna stazione -</i>"
             ),
             sort=CICLOPI_SORTING_CHOICES[sorting_code],
+            order=bot.get_message(
+                'ciclopi', 'sorting',
+                CICLOPI_SORTING_CHOICES[sorting_code]['id'],
+                'short_description',
+                user_record=user_record, update=update
+            ),
             lim=(
                 " ({adv} le preferite)".format(
                     adv='prima' if show_all else 'solo'
@@ -939,8 +997,16 @@ async def _ciclopi_button_sort(bot, update, user_record, arguments):
         "Scegli una nuova modalità o torna all'elenco delle stazioni."
     ).format(
         options='\n'.join(
-            "- {c[symbol]} {c[name]}: {c[description]}".format(
-                c=choice
+            "- {symbol} {name}: {description}".format(
+                symbol=choice['symbol'],
+                name=bot.get_message(
+                    'ciclopi', 'sorting', choice['id'], 'name',
+                    user_record=user_record, update=update
+                ),
+                description=bot.get_message(
+                    'ciclopi', 'sorting', choice['id'], 'description',
+                    user_record=user_record, update=update
+                )
             )
             for choice in CICLOPI_SORTING_CHOICES.values()
         )
@@ -948,12 +1014,16 @@ async def _ciclopi_button_sort(bot, update, user_record, arguments):
     reply_markup = make_inline_keyboard(
         [
             make_button(
-                text="{s} {c[name]} {c[symbol]}".format(
+                text="{s} {name} {c[symbol]}".format(
                     c=choice,
                     s=(
                         '✅'
                         if code == ciclopi_record['sorting']
                         else '☑️'
+                    ),
+                    name=bot.get_message(
+                        'ciclopi', 'sorting', choice['id'], 'name',
+                        user_record=user_record, update=update
                     )
                 ),
                 prefix='ciclopi:///',
