@@ -1501,7 +1501,7 @@ def init(bot, ciclopi_messages=None):
         ciclopi_messages = default_ciclopi_messages
 
     @bot.command(command='/ciclopi', aliases=["CicloPi 🚲", "🚲 CicloPi 🔴"],
-                 reply_keyboard_button=default_ciclopi_messages[
+                 reply_keyboard_button=ciclopi_messages[
                     'ciclopi_command']['reply_keyboard_button'],
                  show_in_keyboard=True,
                  description=(
