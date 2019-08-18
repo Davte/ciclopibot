@@ -314,5 +314,52 @@ default_ciclopi_messages = {
                   "Scegli una nuova modalità o torna all'elenco delle "
                   "stazioni usando i bottoni."
         },
+        'favourites': {
+            'popup': {
+                'en': "Touch a station to add or remove it",
+                'it': "Tocca una stazione per aggiungerla o rimuoverla",
+            },
+            'header': {
+                'en': "🚲 <b>Favourite stations</b> ⭐️\n"
+                      "{options}\n\n"
+                      "Add or remove your favourite stations.",
+                'it': "🚲 <b>Stazioni preferite</b> ⭐️\n"
+                      "{options}\n\n"
+                      "Aggiungi o togli le tue stazioni preferite."
+            },
+            'sort': {
+                'buttons': {
+                    'change_order': {
+                        'en': "🔃 Change order",
+                        'it': "🔃 Riordina",
+                    },
+                    'edit': {
+                        'en': "✏️ Edit favourite stations ⭐️",
+                        'it': "✏️ Modifica stazioni preferite ⭐️",
+                    },
+                    'move_down': {
+                        'en': "Move down ⬇️",
+                        'it': "Sposta in basso ⬇️",
+                    },
+                    'move_up': {
+                        'en': "Move up ⬆️",
+                        'it': "Sposta in alto ⬆️",
+                    },
+                },
+                'end': {
+                    'en': "End of the line reached!",
+                    'it': "Capolinea!",
+                },
+                'header': {
+                    'en': "🚲 <b>Favourite stations</b> ⭐️\n"
+                          "{options}\n\n"
+                          "Add, remove or sort your favourite stations.",
+                    'it': "🚲 <b>Stazioni preferite</b> ⭐️\n"
+                          "{options}\n\n"
+                          "Aggiungi, togli o riordina le tue stazioni "
+                          "preferite.",
+                },
+            },
+        }
     }
 }

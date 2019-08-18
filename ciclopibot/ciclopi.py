@@ -1079,9 +1079,6 @@ async def _ciclopi_button_limit(bot, update, user_record, arguments):
     return result, text, reply_markup
 
 
-# TODO: Multilanguage support from this line
-
-
 async def _ciclopi_button_show(bot, update, user_record, arguments):
     result, text, reply_markup = '', '', None
     fake_update = update['message']
@@ -1124,10 +1121,13 @@ async def _ciclopi_button_legend(bot, update, user_record, arguments):
     return result, text, reply_markup
 
 
-async def _ciclopi_button_favorites_add(bot, update, user_record, arguments,
-                                        order_record, ordered_stations):
+async def _ciclopi_button_favourites_add(bot, update, user_record, arguments,
+                                         order_record, ordered_stations):
     result, text, reply_markup = '', '', None
-    result = "Seleziona le stazioni da aggiungere"
+    result = bot.get_message(
+        'ciclopi', 'button', 'favourites', 'popup',
+        update=update, user_record=user_record
+    )
     if len(arguments) == 2 and arguments[1].isnumeric():
         station_id = int(arguments[1])
         chat_id = (
@@ -1181,11 +1181,9 @@ async def _ciclopi_button_favorites_add(bot, update, user_record, arguments,
                 ordered_stations.append(
                     Station(station_id)
                 )
-    text = (
-        "🚲 <b>Stazioni preferite</b> ⭐️\n"
-        "{options}\n\n"
-        "Aggiungi o togli le tue stazioni preferite."
-    ).format(
+    text = bot.get_message(
+        'ciclopi', 'button', 'favourites', 'header',
+        update=update, user_record=user_record,
         options=line_drawing_unordered_list(
             [
                 station.name
@@ -1220,7 +1218,11 @@ async def _ciclopi_button_favorites_add(bot, update, user_record, arguments,
         ) + make_lines_of_buttons(
             [
                 make_button(
-                    text="🔃 Riordina",
+                    text=bot.get_message(
+                        'ciclopi', 'button', 'favourites', 'sort', 'buttons',
+                        'change_order',
+                        update=update, user_record=user_record
+                    ),
                     prefix="ciclopi:///",
                     data=["fav"]
                 )
@@ -1324,7 +1326,7 @@ def move_favorite_station(
     return order_record, ordered_stations
 
 
-async def _ciclopi_button_favorites(bot, update, user_record, arguments):
+async def _ciclopi_button_favourites(bot, update, user_record, arguments):
     result, text, reply_markup = '', '', None
     action = (
         arguments[0] if len(arguments) > 0
@@ -1347,12 +1349,15 @@ async def _ciclopi_button_favorites(bot, update, user_record, arguments):
             for record in order_record
         ]
     if action == 'add':
-        return await _ciclopi_button_favorites_add(
+        return await _ciclopi_button_favourites_add(
             bot, update, user_record, arguments,
             order_record, ordered_stations
         )
     elif action == 'dummy':
-        return 'Capolinea!', '', None
+        return bot.get_message(
+            'ciclopi', 'button', 'favourites', 'sort', 'end',
+            update=update, user_record=user_record
+        ), '', None
     elif action == 'set' and len(arguments) > 1:
         action = arguments[1]
     elif (
@@ -1365,11 +1370,9 @@ async def _ciclopi_button_favorites(bot, update, user_record, arguments):
             bot, chat_id, action, station_id,
             order_record
         )
-    text = (
-        "🚲 <b>Stazioni preferite</b> ⭐️\n"
-        "{options}\n\n"
-        "Aggiungi, togli o riordina le tue stazioni preferite."
-    ).format(
+    text = bot.get_message(
+        'ciclopi', 'button', 'favourites', 'sort', 'header',
+        update=update, user_record=user_record,
         options=line_drawing_unordered_list(
             [
                 station.name
@@ -1414,7 +1417,11 @@ async def _ciclopi_button_favorites(bot, update, user_record, arguments):
         ] + [
             [
                 make_button(
-                    text="➕ Aggiungi stazione preferita ⭐️",
+                    text=bot.get_message(
+                        'ciclopi', 'button', 'favourites', 'sort', 'buttons',
+                        'edit',
+                        update=update, user_record=user_record
+                    ),
                     prefix='ciclopi:///',
                     data=['fav', 'add']
                 )
@@ -1423,12 +1430,20 @@ async def _ciclopi_button_favorites(bot, update, user_record, arguments):
             [
                 (
                      make_button(
-                        text='Sposta in basso ⬇️',
+                        text=bot.get_message(
+                            'ciclopi', 'button', 'favourites', 'sort',
+                            'buttons', 'move_down',
+                            update=update, user_record=user_record
+                        ),
                         prefix='ciclopi:///',
                         data=['fav', 'set', 'down']
                      ) if action == 'up'
                      else make_button(
-                        text='Sposta in alto ⬆️',
+                        text=bot.get_message(
+                            'ciclopi', 'button', 'favourites', 'sort',
+                            'buttons', 'move_up',
+                            update=update, user_record=user_record
+                        ),
                         prefix='ciclopi:///',
                         data=['fav', 'set', 'up']
                      )
@@ -1442,6 +1457,8 @@ async def _ciclopi_button_favorites(bot, update, user_record, arguments):
         ]
     )
     return result, text, reply_markup
+
+# TODO: Multilanguage support from this line
 
 
 async def _ciclopi_button_setpos(bot, update, user_record, arguments):
@@ -1497,7 +1514,7 @@ _ciclopi_button_routing_table = {
     'show': _ciclopi_button_show,
     'setpos': _ciclopi_button_setpos,
     'legend': _ciclopi_button_legend,
-    'fav': _ciclopi_button_favorites
+    'fav': _ciclopi_button_favourites
 }
 
 
