@@ -1,6 +1,68 @@
 """Default messages for bot functions."""
 
+language_messages = {
+    'language_command': {
+        'name': {
+            'en': "/language",
+            'it': "/lingua"
+        },
+        'reply_keyboard_button': {
+            'en': "Language 🗣",
+            'it': "Lingua 🗣"
+        },
+        'alias': {
+            'en': "Language 🗣",
+            'it': "Lingua 🗣"
+        },
+        'description': {
+            'en': "Change language settings",
+            'it': "Cambia le impostazioni della lingua"
+        }
+    },
+    'language_button': {
+        'description': {
+            'en': "Change language settings",
+            'it': "Cambia le impostazioni della lingua"
+        },
+        'language_set': {
+            'en': "Selected language: English 🇬🇧",
+            'it': "Lingua selezionata: Italiano 🇮🇹"
+        }
+    },
+    'language_panel': {
+        'text': {
+            'en': "<b>Choose a language</b>",
+            'it': "<b>Seleziona una lingua</b>"
+        }
+    }
+}
+
+supported_languages = {
+    'en': {
+        'flag': '🇬🇧',
+        'name': 'English'
+    },
+    'it': {
+        'flag': '🇮🇹',
+        'name': 'Italiano'
+    }
+}
+
 default_ciclopi_messages = {
+    'help': {
+        "name": "ciclopi",
+        "label": {
+            'en': "CicloPi 🚲",
+            'it': "CicloPi 🚲",
+        },
+        "authorization_level": "everybody",
+        "description": {
+            'en': "Use /ciclopi command to know how many available bikes and "
+                  "free stalls are available in each station.",
+            'it': "Per vedere quante bici disponibili e quanti posti liberi "
+                  "ci sono in ogni stazione CicloPi usa il comando /ciclopi.",
+        },
+    },
     'command': {
         'description': {
             'en': "CiloPi stations status",
@@ -383,4 +445,52 @@ default_ciclopi_messages = {
             },
         },
     }
+}
+
+default_help_messages = {
+    'help_command': {
+        'header': {
+            'en': "<b>{bot.name} commands</b>\n\n"
+                  "{commands}",
+            'it': "<b>Comandi di {bot.name}</b>\n\n"
+                  "{commands}",
+        },
+        'text': {
+            'en': "<b>📖 {bot.name} guide</b>\n\n"
+                  "Welcome!\n"
+                  "To visit a guide section, press the corresponding button.\n"
+                  "To view all available commands, see section `Comandi`.\n\n"
+                  "Bot author and administrator: @Davte",
+            'it': "<b>📖 Guida di {bot.name}\n\n</b>"
+                  "Benvenuto!\n"
+                  "Per leggere una sezione della guida premi il bottone "
+                  "corrispondente. Per conoscere  tutti i comandi "
+                  "disponibili, visita l'apposita sezione della guida "
+                  "premendo il pulsante Comandi.\n\n"
+                  "Autore e amministratore del bot: @Davte"
+        },
+        'reply_keyboard_button': {
+            'en': "Help 📖",
+            'it': "Guida 📖"
+        },
+        'description': {
+            'en': "Help",
+            'it': "Aiuto"
+        },
+        'access_denied_message': {
+            'en': "Ask for authorization. If your request is accepted, send "
+                  "/help command again to read the guide.",
+            'it': "Chiedi di essere autorizzato: se la tua richiesta "
+                  "verrà accolta, ripeti il comando /help per leggere "
+                  "il messaggio di aiuto."
+        },
+        'back_to_help_menu': {
+            'en': "Back to guide menu 📖",
+            'it': "Torna al menu Guida 📖",
+        },
+    },
+    'commands_button_label': {
+            'en': "Commands 🤖",
+            'it': "Comandi 🤖",
+    },
 }

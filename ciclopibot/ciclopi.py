@@ -1606,6 +1606,7 @@ def init(bot, ciclopi_messages=None, ciclopi_messages_json=None,
                  description=(
                     bot.messages['ciclopi']['command']['description']
                  ),
+                 help_section=bot.messages['ciclopi']['help'],
                  authorization_level='everybody')
     async def ciclopi_command(bot, update, user_record):
         return await _ciclopi_command(bot, update, user_record)

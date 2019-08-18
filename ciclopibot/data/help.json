@@ -1,8 +1,0 @@
-[
-  {
-      "label": "CicloPi 🚲",
-      "abbr": "ciclopi",
-      "auth": "everybody",
-      "descr": "Per vedere quante bici disponibili e quanti posti liberi ci sono in ogni stazione CicloPi usa il comando /ciclopi."
-  }
-]

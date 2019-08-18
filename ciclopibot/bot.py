@@ -13,88 +13,9 @@ from davtelepot import administration_tools, authorization, languages
 from . import ciclopi
 from . import helper
 from .data.passwords import bot_token
-
-language_messages = {
-    'language_command': {
-        'name': {
-            'en': "/language",
-            'it': "/lingua"
-        },
-        'reply_keyboard_button': {
-            'en': "Language 🗣",
-            'it': "Lingua 🗣"
-        },
-        'alias': {
-            'en': "Language 🗣",
-            'it': "Lingua 🗣"
-        },
-        'description': {
-            'en': "Change language settings",
-            'it': "Cambia le impostazioni della lingua"
-        }
-    },
-    'language_button': {
-        'description': {
-            'en': "Change language settings",
-            'it': "Cambia le impostazioni della lingua"
-        },
-        'language_set': {
-            'en': "Selected language: English 🇬🇧",
-            'it': "Lingua selezionata: Italiano 🇮🇹"
-        }
-    },
-    'language_panel': {
-        'text': {
-            'en': "<b>Choose a language</b>",
-            'it': "<b>Seleziona una lingua</b>"
-        }
-    }
-}
-
-supported_languages = {
-    'en': {
-        'flag': '🇬🇧',
-        'name': 'English'
-    },
-    'it': {
-        'flag': '🇮🇹',
-        'name': 'Italiano'
-    }
-}
-
-ciclopibot_help_messages = {
-    'help_command': {
-        'text': {
-            'en': "<b>📖 {bot.name} guide</b>\n\n"
-                  "Welcome!\n"
-                  "To visit a guide section, press the corresponding button.\n"
-                  "To view all available commands, see section `Comandi`.\n\n"
-                  "Bot author and administrator: @Davte",
-            'it': "<b>📖 Guida di {bot.name}\n\n</b>"
-                  "Benvenuto!\n"
-                  "Per leggere una sezione della guida premi il bottone "
-                  "corrispondente. Per conoscere  tutti i comandi "
-                  "disponibili, visita l'apposita sezione della guida "
-                  "premendo il pulsante Comandi.\n\n"
-                  "Autore e amministratore del bot: @Davte"
-        },
-        'reply_keyboard_button': {
-            'en': "Help 📖",
-            'it': "Guida 📖"
-        },
-        'description': {
-            'en': "Help",
-            'it': "Aiuto"
-        },
-        'access_denied_message': {
-            'en': "Ask for authorization. If your request is accepted, send "
-                  "/help command again to read the guide.",
-            'it': "Chiedi di essere autorizzato: se la tua richiesta "
-                  "verrà accolta, ripeti il comando /help per leggere "
-                  "il messaggio di aiuto."
-        }
-    }
-}
+from .messages import (
+    language_messages, supported_languages
+)
 
 if __name__ == '__main__':
     path = os.path.dirname(__file__)
@@ -168,8 +89,6 @@ if __name__ == '__main__':
     ciclopi.init(bot)
     helper.init(
         bot=bot,
-        help_messages=ciclopibot_help_messages,
-        help_sections_file='ciclopibot/data/help.json'
     )
     authorization.init(bot)
     languages.init(

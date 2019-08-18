@@ -11,7 +11,6 @@ Examples of data files
     local_host = '127.0.0.1'
     port = 8080
     ```
-- `help.json`: file where /help data are stored
 - `passwords.py`: secret file where you can store your bot token
     ```python
     bot_token = "111222333:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
