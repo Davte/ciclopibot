@@ -360,6 +360,27 @@ default_ciclopi_messages = {
                           "preferite.",
                 },
             },
-        }
+        },
+        'location': {
+            'popup': {
+                'en': "Send a location!",
+                'it': "Inviami una posizione!",
+            },
+            'instructions': {
+                'en': "Send a location.\n"
+                      "Use the button to send your current location.",
+                'it': "Inviami una posizione.\n"
+                      "Per inviare la tua posizione attuale, usa il "
+                      "pulsante.",
+            },
+            'send_current_location': {
+                'en': "Send current location",
+                'it': "Invia la mia posizione",
+            },
+            'cancel': {
+                'en': "Cancel",
+                'it': "Annulla",
+            },
+        },
     }
 }

@@ -1458,8 +1458,6 @@ async def _ciclopi_button_favourites(bot, update, user_record, arguments):
     )
     return result, text, reply_markup
 
-# TODO: Multilanguage support from this line
-
 
 async def _ciclopi_button_setpos(bot, update, user_record, arguments):
     result, text, reply_markup = '', '', None
@@ -1468,7 +1466,10 @@ async def _ciclopi_button_setpos(bot, update, user_record, arguments):
         else update['chat']['id'] if 'chat' in update
         else 0
     )
-    result = "Inviami una posizione!"
+    result = bot.get_message(
+        'ciclopi', 'button', 'location', 'popup',
+        update=update, user_record=user_record
+    )
     bot.set_individual_location_handler(
         await async_wrapper(
             set_ciclopi_location
@@ -1482,22 +1483,28 @@ async def _ciclopi_button_setpos(bot, update, user_record, arguments):
     asyncio.ensure_future(
         bot.send_message(
             chat_id=chat_id,
-            text=(
-                "Inviami una posizione.\n"
-                "Per inviare la tua posizione attuale, usa il "
-                "pulsante."
+            text=bot.get_message(
+                'ciclopi', 'button', 'location', 'instructions',
+                update=update, user_record=user_record
             ),
             reply_markup=dict(
                 keyboard=[
                     [
                         dict(
-                            text="Invia la mia posizione",
+                            text=bot.get_message(
+                                'ciclopi', 'button', 'location',
+                                'send_current_location',
+                                update=update, user_record=user_record
+                            ),
                             request_location=True
                         )
                     ],
                     [
                         dict(
-                            text="Annulla"
+                            text=bot.get_message(
+                                'ciclopi', 'button', 'location', 'cancel',
+                                update=update, user_record=user_record
+                            ),
                         )
                     ]
                 ],
