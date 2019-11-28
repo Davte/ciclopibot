@@ -459,14 +459,16 @@ default_help_messages = {
             'en': "<b>📖 {bot.name} guide</b>\n\n"
                   "Welcome!\n"
                   "To visit a guide section, press the corresponding button.\n"
-                  "To view all available commands, see section `Comandi`.\n\n"
+                  "To view all available commands, see section "
+                  "<code>Commands</code>.\n\n"
                   "Bot author and administrator: @Davte",
             'it': "<b>📖 Guida di {bot.name}\n\n</b>"
                   "Benvenuto!\n"
                   "Per leggere una sezione della guida premi il bottone "
-                  "corrispondente. Per conoscere  tutti i comandi "
+                  "corrispondente.\n"
+                  "Per conoscere  tutti i comandi "
                   "disponibili, visita l'apposita sezione della guida "
-                  "premendo il pulsante Comandi.\n\n"
+                  "premendo il pulsante <code>Comandi</code>.\n\n"
                   "Autore e amministratore del bot: @Davte"
         },
         'reply_keyboard_button': {
