@@ -568,23 +568,18 @@ async def _ciclopi_command(bot, update, user_record, sent_message=None,
                            show_all=False):
     chat_id = update['chat']['id']
     default_stations_to_show = 5
-    if sent_message is None:
-        await bot.sendChatAction(
-            chat_id=chat_id,
-            action='typing'
+    placeholder_id = bot.set_placeholder(
+        timeout=datetime.timedelta(seconds=1),
+        sent_message=sent_message,
+        chat_id=chat_id,
+        text="<i>{message}...</i>".format(
+            message=bot.get_message(
+                'ciclopi', 'command', 'updating',
+                update=update, user_record=user_record
+            )
         )
-    else:
-        await bot.edit_message_text(
-            update=sent_message,
-            text="<i>{message}...</i>".format(
-                message=bot.get_message(
-                    'ciclopi', 'command', 'updating',
-                    update=update, user_record=user_record
-                )
-            ),
-            parse_mode='HTML',
-            reply_markup=None
-        )
+    )
+    await asyncio.sleep(3)
     ciclopi_data = await ciclopi_webpage.get_page()
     if ciclopi_data is None or isinstance(ciclopi_data, Exception):
         text = bot.get_message(
@@ -807,6 +802,8 @@ async def _ciclopi_command(bot, update, user_record, sent_message=None,
         else bot.edit_message_text
     )
     await method(**parameters)
+    # Mark request as done
+    bot.placeholder_requests[placeholder_id] = 1
     return
 
 
