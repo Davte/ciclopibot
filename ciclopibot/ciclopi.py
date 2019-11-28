@@ -579,7 +579,6 @@ async def _ciclopi_command(bot, update, user_record, sent_message=None,
             )
         )
     )
-    await asyncio.sleep(3)
     ciclopi_data = await ciclopi_webpage.get_page()
     if ciclopi_data is None or isinstance(ciclopi_data, Exception):
         text = bot.get_message(
