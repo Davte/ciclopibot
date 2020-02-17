@@ -7,7 +7,6 @@ import sys
 
 # Third party modules
 import davtelepot
-from davtelepot import administration_tools, authorization, languages
 
 # Project modules
 from . import ciclopi
@@ -85,16 +84,17 @@ if __name__ == '__main__':
             ),
             ['telegram_id']
         )
-    administration_tools.init(bot)
+    davtelepot.administration_tools.init(bot)
     ciclopi.init(bot)
     helper.init(
         bot=bot,
     )
-    authorization.init(bot)
-    languages.init(
+    davtelepot.authorization.init(bot)
+    davtelepot.languages.init(
         bot, language_messages=language_messages,
         supported_languages=supported_languages
     )
+    davtelepot.suggestions.init(bot)
     # Run bot(s)
     logging.info("Press ctrl+C to exit.")
     exit_state = davtelepot.bot.Bot.run(
