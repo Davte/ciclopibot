@@ -10,10 +10,9 @@ import davtelepot
 
 # Project modules
 from . import ciclopi
-from . import helper
 from .data.passwords import bot_token
 from .messages import (
-    language_messages, supported_languages
+    default_help_messages, language_messages, supported_languages
 )
 
 if __name__ == '__main__':
@@ -86,15 +85,13 @@ if __name__ == '__main__':
         )
     davtelepot.administration_tools.init(bot)
     ciclopi.init(bot)
-    helper.init(
-        bot=bot,
-    )
     davtelepot.authorization.init(bot)
     davtelepot.languages.init(
         bot, language_messages=language_messages,
         supported_languages=supported_languages
     )
     davtelepot.suggestions.init(bot)
+    davtelepot.helper.init(bot, help_messages=default_help_messages)
     # Run bot(s)
     logging.info("Press ctrl+C to exit.")
     exit_state = davtelepot.bot.Bot.run(
