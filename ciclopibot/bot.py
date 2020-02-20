@@ -16,7 +16,11 @@ from .messages import (
 )
 
 if __name__ == '__main__':
-    path = os.path.dirname(__file__)
+    path = os.path.dirname(
+        os.path.abspath(
+            __file__
+        )
+    )
     try:
         from .data.config import log_file_name
     except ImportError:
