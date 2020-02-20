@@ -9,6 +9,7 @@ import datetime
 import math
 
 # Third party modules
+import davtelepot
 from davtelepot.utilities import (
     async_wrapper, CachedPage, extract, get_cleaned_text,
     line_drawing_unordered_list, make_button, make_inline_keyboard,
@@ -567,21 +568,21 @@ async def cancel_ciclopi_location(bot, update, user_record):
     )
 
 
-async def _ciclopi_command(bot, update, user_record, sent_message=None,
+async def _ciclopi_command(bot: davtelepot.bot.Bot, update, user_record, sent_message=None,
                            show_all=False):
     chat_id = update['chat']['id']
     default_stations_to_show = 5
     stations = []
     placeholder_id = bot.set_placeholder(
         timeout=datetime.timedelta(seconds=1),
-        sent_message=sent_message,
         chat_id=chat_id,
-        text="<i>{message}...</i>".format(
-            message=bot.get_message(
-                'ciclopi', 'command', 'updating',
-                update=update, user_record=user_record
-            )
-        )
+        # sent_message=sent_message,
+        # text="<i>{message}...</i>".format(
+        #     message=bot.get_message(
+        #         'ciclopi', 'command', 'updating',
+        #         update=update, user_record=user_record
+        #     )
+        # )
     )
     ciclopi_data = await ciclopi_webpage.get_page()
     if ciclopi_data is None or isinstance(ciclopi_data, Exception):
