@@ -6,12 +6,13 @@ Available bikes in bike sharing stations.
 # Standard library modules
 import asyncio
 import datetime
+import inspect
 import math
 
 # Third party modules
 import davtelepot
 from davtelepot.utilities import (
-    async_wrapper, CachedPage, extract, get_cleaned_text,
+    async_wrapper, CachedPage, get_cleaned_text,
     line_drawing_unordered_list, make_button, make_inline_keyboard,
     make_lines_of_buttons
 )
@@ -918,8 +919,8 @@ async def _ciclopi_button_sort(bot, update, user_record, arguments):
             )
         if len(arguments) == 1:
             new_choice = (
-                int(arguments[0])
-                if arguments[0].isnumeric()
+                arguments[0]
+                if type(arguments[0]) is int
                 else 0
             )
             if new_choice == ciclopi_record['sorting']:
@@ -1009,8 +1010,10 @@ async def _ciclopi_button_limit(bot, update, user_record, arguments):
             )
         if len(arguments) == 1:
             new_choice = (
-                int(arguments[0])
-                if arguments[0].lstrip('+-').isnumeric()
+                arguments[0]
+                if type(arguments[0]) is int
+                else int(arguments[0])
+                if type(arguments[0]) is str and arguments[0].lstrip('+-').isnumeric()
                 else 0
             )
             if new_choice == ciclopi_record['stations_to_show']:
@@ -1126,7 +1129,7 @@ async def _ciclopi_button_favourites_add(bot, update, user_record, arguments,
         'ciclopi', 'button', 'favourites', 'popup',
         update=update, user_record=user_record
     )
-    if len(arguments) == 2 and arguments[1].isnumeric():
+    if len(arguments) == 2 and type(arguments[1]) is int:
         station_id = int(arguments[1])
         chat_id = (
             update['message']['chat']['id'] if 'message' in update
@@ -1357,7 +1360,7 @@ async def _ciclopi_button_favourites(bot, update, user_record, arguments):
     elif (
             action in ['up', 'down']
             and len(arguments) > 1
-            and arguments[1].isnumeric()
+            and type(arguments[1]) is int
     ):
         station_id = int(arguments[1])
         order_record, ordered_stations = move_favorite_station(
@@ -1520,15 +1523,20 @@ _ciclopi_button_routing_table = {
 }
 
 
-async def _ciclopi_button(bot, update, user_record):
-    data = update['data']
-    command, *arguments = extract(data, ':///').split('|')
+async def _ciclopi_button(bot, update, user_record, data):
+    command, *arguments = data
     if command in _ciclopi_button_routing_table:
-        result, text, reply_markup = await _ciclopi_button_routing_table[
-            command
-        ](
-            bot, update, user_record, arguments
-        )
+        handler = _ciclopi_button_routing_table[command]
+        parameters = {
+            name: value
+            for name, value in {'bot': bot,
+                                'update': update,
+                                'user_record': user_record,
+                                'arguments': arguments
+                                }.items()
+            if name in inspect.signature(handler).parameters
+        }
+        result, text, reply_markup = await handler(**parameters)
     else:
         return
     if text:
@@ -1606,6 +1614,6 @@ def init(telegram_bot, ciclopi_messages=None,
     async def ciclopi_command(bot, update, user_record):
         return await _ciclopi_command(bot, update, user_record)
 
-    @telegram_bot.button(prefix='ciclopi:///', authorization_level='everybody')
-    async def ciclopi_button(bot, update, user_record):
-        return await _ciclopi_button(bot, update, user_record)
+    @telegram_bot.button(prefix='ciclopi:///', separator='|', authorization_level='everybody')
+    async def ciclopi_button(bot, update, user_record, data):
+        return await _ciclopi_button(bot=bot, update=update, user_record=user_record, data=data)
