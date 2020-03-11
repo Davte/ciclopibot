@@ -9,7 +9,7 @@ import sys
 import davtelepot
 
 # Project modules
-from . import ciclopi
+from . import ciclopi, messages
 from .data.passwords import bot_token
 from .messages import (
     default_help_messages, language_messages, supported_languages
@@ -73,11 +73,10 @@ if __name__ == '__main__':
     bot.set_class_log_file_name(log_file_name)
     bot.set_class_errors_file_name(errors_file_name)
     bot.set_unknown_command_message(
-        "Comando sconosciuto!\n"
-        "Scrivi /help per visualizzare la guida."
+        messages.unknown_command_message
     )
     bot.set_authorization_denied_message(
-        "Non disponi di autorizzazioni sufficienti per questo comando."
+        messages.authorization_denied_message
     )
     with bot.db as db:
         db['users'].upsert(

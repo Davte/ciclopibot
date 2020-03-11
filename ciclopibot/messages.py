@@ -1,5 +1,10 @@
 """Default messages for bot functions."""
 
+authorization_denied_message = {
+    'en': "You are not allowed to use this command, sorry.",
+    'it': "Non disponi di autorizzazioni sufficienti per questa richiesta, spiacente.",
+}
+
 language_messages = {
     'language_command': {
         'name': {
@@ -495,4 +500,9 @@ default_help_messages = {
             'en': "Commands 🤖",
             'it': "Comandi 🤖",
     },
+}
+
+unknown_command_message = {
+    'en': "Unknown command! Touch /help to read the guide and available commands.",
+    'it': "Comando sconosciuto! Fai /help per leggere la guida e i comandi."
 }
