@@ -571,6 +571,15 @@ async def cancel_ciclopi_location(bot, update, user_record):
 
 async def _ciclopi_command(bot: davtelepot.bot.Bot, update, user_record, sent_message=None,
                            show_all=False):
+    if datetime.datetime.now() < datetime.datetime(year=2020, month=4, day=13):
+        return {
+            'text': {
+                'it': "⚠️ Il servizio è momentaneamente sospeso a causa dell'emergenza COVID-19🦠\n"
+                      "#stiamoacasa 🏠",
+                'en': "⚠️ The service is currently suspended due to COVID-19 emergency.🦠\n"
+                      "#stayathome 🏠"
+            }
+        }
     chat_id = update['chat']['id']
     default_stations_to_show = 5
     stations = []
