@@ -577,7 +577,7 @@ async def _ciclopi_command(bot: davtelepot.bot.Bot, update, user_record, sent_me
                 'it': "⚠️ Il servizio è momentaneamente sospeso a causa dell'emergenza COVID-19🦠\n"
                       "#stiamoacasa 🏠",
                 'en': "⚠️ The service is currently suspended due to COVID-19 emergency.🦠\n"
-                      "#stayathome 🏠"
+                      "#stayathome el🏠"
             }
         }
     chat_id = update['chat']['id']
