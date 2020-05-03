@@ -15,7 +15,8 @@ from .messages import (
     default_help_messages, language_messages, supported_languages
 )
 
-if __name__ == '__main__':
+
+def main():
     path = os.path.dirname(
         os.path.abspath(
             __file__
@@ -43,6 +44,7 @@ if __name__ == '__main__':
     # Outputs the log in console, log_file and errors_file
     # Log formatter: datetime, module name (filled with spaces up to 15
     # characters), logging level name (filled to 8), message
+    # noinspection SpellCheckingInspection
     log_formatter = logging.Formatter(
         "%(asctime)s [%(module)-15s %(levelname)-8s]     %(message)s",
         style='%'
@@ -60,10 +62,10 @@ if __name__ == '__main__':
     file_handler.setLevel(logging.ERROR)
     root_logger.addHandler(file_handler)
 
-    consoleHandler = logging.StreamHandler()
-    consoleHandler.setFormatter(log_formatter)
-    consoleHandler.setLevel(logging.DEBUG)
-    root_logger.addHandler(consoleHandler)
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(log_formatter)
+    console_handler.setLevel(logging.DEBUG)
+    root_logger.addHandler(console_handler)
 
     # Instantiate bot
     bot = davtelepot.bot.Bot(token=bot_token,
@@ -78,14 +80,13 @@ if __name__ == '__main__':
     bot.set_authorization_denied_message(
         messages.authorization_denied_message
     )
-    with bot.db as db:
-        db['users'].upsert(
-            dict(
-                telegram_id=63538990,
-                privileges=1
-            ),
-            ['telegram_id']
-        )
+    bot.db['users'].upsert(
+        dict(
+            telegram_id=63538990,
+            privileges=1
+        ),
+        ['telegram_id']
+    )
     davtelepot.administration_tools.init(bot)
     ciclopi.init(bot)
     davtelepot.authorization.init(bot)
@@ -101,4 +102,8 @@ if __name__ == '__main__':
         local_host=local_host,
         port=port
     )
-    sys.exit(exit_state)
+    return exit_state
+
+
+if __name__ == '__main__':
+    sys.exit(main())

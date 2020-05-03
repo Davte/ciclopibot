@@ -21,7 +21,7 @@ default_location = None
 
 _URL = "http://www.ciclopi.eu/frmLeStazioni.aspx"
 
-ciclopi_webpage = CachedPage.get(
+ciclopi_web_page = CachedPage.get(
     _URL,
     datetime.timedelta(seconds=15),
     mode='html'
@@ -569,6 +569,8 @@ async def cancel_ciclopi_location(bot, update, user_record):
     )
 
 
+# The service is currently suspended: code is unreachable of course
+# noinspection PyUnreachableCode,PyUnusedLocal
 async def _ciclopi_command(bot: davtelepot.bot.Bot, update, user_record, sent_message=None,
                            show_all=False):
     return {
@@ -593,7 +595,7 @@ async def _ciclopi_command(bot: davtelepot.bot.Bot, update, user_record, sent_me
         #     )
         # )
     )
-    ciclopi_data = await ciclopi_webpage.get_page()
+    ciclopi_data = await ciclopi_web_page.get_page()
     if ciclopi_data is None or isinstance(ciclopi_data, Exception):
         text = bot.get_message(
             'ciclopi', 'command', 'unavailable_website',
