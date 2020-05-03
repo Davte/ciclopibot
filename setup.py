@@ -57,6 +57,7 @@ setuptools.setup(
     install_requires=[
         'davtelepot',
     ],
+    python_requires='>=3.5',
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Environment :: Console",

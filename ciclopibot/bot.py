@@ -10,34 +10,64 @@ import davtelepot
 
 # Project modules
 from . import ciclopi, messages
-from .data.passwords import bot_token
 from .messages import (
     default_help_messages, language_messages, supported_languages
 )
 
 
-def main():
-    path = os.path.dirname(
-        os.path.abspath(
-            __file__
+def main(bot_token: str = None,
+         path: str = None,
+         log_file_name: str = None,
+         errors_file_name: str = None,
+         local_host: str = None,
+         port: int = None,
+         hostname: str = None,
+         certificate: str = None):
+    if bot_token is None:
+        try:
+            from .data.passwords import bot_token
+        except ImportError:
+            logging.error(
+                "Missing bot token. Create a bot with t.me/BotFather and "
+                "provide its token here to run a local copy of CicloPiBot."
+            )
+            return
+    if path is None:
+        path = os.path.dirname(
+            os.path.abspath(
+                __file__
+            )
         )
-    )
-    try:
-        from .data.config import log_file_name
-    except ImportError:
-        log_file_name = 'CicloPi.info.log'
-    try:
-        from .data.config import errors_file_name
-    except ImportError:
-        errors_file_name = 'CicloPi.errors.log'
-    try:
-        from .data.config import local_host, port
-    except ImportError:
-        local_host, port = '127.0.0.1', 3000
-    try:
-        from .data.config import hostname, certificate
-    except ImportError:
-        hostname, certificate = '', None
+    if log_file_name is None:
+        try:
+            from .data.config import log_file_name
+        except ImportError:
+            log_file_name = 'CicloPi.info.log'
+    if errors_file_name is None:
+        try:
+            from .data.config import errors_file_name
+        except ImportError:
+            errors_file_name = 'CicloPi.errors.log'
+    if local_host is None:
+        try:
+            from .data.config import local_host
+        except ImportError:
+            local_host = 'localhost'
+    if port is None:
+        try:
+            from .data.config import port
+        except ImportError:
+            port = 3000
+    if hostname is None:
+        try:
+            from .data.config import hostname
+        except ImportError:
+            hostname = ''
+    if certificate is None:
+        try:
+            from .data.config import certificate
+        except ImportError:
+            certificate = None
     log_file = f"{path}/data/{log_file_name}"
     errors_file = f"{path}/data/{errors_file_name}"
 
