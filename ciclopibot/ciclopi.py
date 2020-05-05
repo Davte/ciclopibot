@@ -10,6 +10,8 @@ import inspect
 import math
 
 # Third party modules
+from typing import Union
+
 import davtelepot
 from davtelepot.utilities import (
     async_wrapper, CachedPage, get_cleaned_text,
@@ -338,7 +340,13 @@ class Station(Location):
 
     @property
     def is_active(self):
-        """Return True if station is active."""
+        """Return True if station is active.
+
+        Return False if there are no bikes and no available stalls or if
+            station was marked as inactive.
+        """
+        if self.free == self.bikes == 0:
+            return False
         return self._active
 
     @property
@@ -573,14 +581,17 @@ async def cancel_ciclopi_location(bot, update, user_record):
 # noinspection PyUnreachableCode,PyUnusedLocal
 async def _ciclopi_command(bot: davtelepot.bot.Bot, update, user_record, sent_message=None,
                            show_all=False):
-    return {
-        'text': {
-            'it': "⚠️ Il servizio è momentaneamente sospeso a causa dell'emergenza COVID-19🦠\n"
-                  "#stiamoacasa 🏠",
-            'en': "⚠️ The service is currently suspended due to COVID-19 emergency.🦠\n"
-                  "#stayathome 🏠"
+    if ('ciclopi' not in bot.shared_data
+            or 'is_working' not in bot.shared_data['ciclopi']
+            or not bot.shared_data['ciclopi']['is_working']):
+        return {
+            'text': {
+                'it': "⚠️ Il servizio è momentaneamente sospeso a causa dell'emergenza COVID-19🦠\n"
+                      "#stiamoacasa 🏠",
+                'en': "⚠️ The service is currently suspended due to COVID-19 emergency.🦠\n"
+                      "#stayathome 🏠"
+            }
         }
-    }
     chat_id = update['chat']['id']
     default_stations_to_show = 5
     stations = []
@@ -1561,7 +1572,28 @@ async def _ciclopi_button(bot, update, user_record, data):
     return result
 
 
-def init(telegram_bot, ciclopi_messages=None,
+async def check_service_status(bot: davtelepot.bot.Bot,
+                               interval: Union[int, datetime.timedelta] = 60 * 60):
+    """Every `interval` seconds, check whether service is active or not.
+
+    Store service status in `bot.shared_data['ciclopi']`.
+    """
+    if isinstance(interval, datetime.timedelta):
+        interval = interval.total_seconds()
+    while 1:
+        ciclopi_data = await ciclopi_web_page.get_page()
+        stations = _get_stations(
+            data=ciclopi_data,
+            location=default_location
+        )
+        bot.shared_data['ciclopi']['is_working'] = any(
+            station.is_active
+            for station in stations
+        )
+        await asyncio.sleep(interval)
+
+
+def init(telegram_bot: davtelepot.bot.Bot, ciclopi_messages=None,
          _default_location=(43.718518, 10.402165)):
     """Take a bot and assign CicloPi-related commands to it.
 
@@ -1575,7 +1607,11 @@ def init(telegram_bot, ciclopi_messages=None,
     # Define a global `default_location` variable holding default location
     global default_location
     default_location = Location(_default_location)
-    telegram_bot.ciclopi_default_location = default_location
+    if 'ciclopi' not in telegram_bot.shared_data:
+        telegram_bot.shared_data['ciclopi'] = dict()
+    telegram_bot.shared_data['ciclopi']['default_location'] = default_location
+
+    asyncio.ensure_future(check_service_status(bot=telegram_bot))
 
     db = telegram_bot.db
     if 'ciclopi_stations' not in db.tables:
