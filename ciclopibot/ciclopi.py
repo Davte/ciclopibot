@@ -1582,14 +1582,15 @@ async def check_service_status(bot: davtelepot.bot.Bot,
         interval = interval.total_seconds()
     while 1:
         ciclopi_data = await ciclopi_web_page.get_page()
-        stations = _get_stations(
-            data=ciclopi_data,
-            location=default_location
-        )
-        bot.shared_data['ciclopi']['is_working'] = any(
-            station.is_active
-            for station in stations
-        )
+        if ciclopi_data is not None and not isinstance(ciclopi_data, Exception):
+            stations = _get_stations(
+                data=ciclopi_data,
+                location=default_location
+            )
+            bot.shared_data['ciclopi']['is_working'] = any(
+                station.is_active
+                for station in stations
+            )
         await asyncio.sleep(interval)
 
 
