@@ -70,7 +70,7 @@ default_ciclopi_messages = {
     },
     'command': {
         'description': {
-            'en': "CiloPi stations status",
+            'en': "CicloPi stations status",
             'it': "Stato delle stazioni CicloPi",
         },
         'reply_keyboard_button': {
