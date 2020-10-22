@@ -449,7 +449,11 @@ default_ciclopi_messages = {
                 'it': "Annulla",
             },
         },
-    }
+    },
+    'service_unavailable': {
+        'it': "⚠ Il servizio è momentaneamente sospeso, riprova più tardi! ⚠",
+        'en': "⚠ The service is currently unavailable, try again later! ⚠"
+    },
 }
 
 default_help_messages = {
