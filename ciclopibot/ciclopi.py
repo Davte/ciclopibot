@@ -8,6 +8,7 @@ import asyncio
 import datetime
 import inspect
 import math
+from collections import OrderedDict
 
 # Third party modules
 from typing import Union
@@ -527,7 +528,9 @@ def _get_stations(data, location):
     return stations
 
 
-async def set_ciclopi_location(bot, update, user_record):
+async def set_ciclopi_location(bot: davtelepot.bot.Bot,
+                               update: dict, user_record: OrderedDict,
+                               language: str):
     """Take a location update and store it as CicloPi place.
 
     CicloPi stations will be sorted by distance from this place.
@@ -553,7 +556,8 @@ async def set_ciclopi_location(bot, update, user_record):
     )
     # Remove individual text message handler which was set to catch `/cancel`
     bot.remove_individual_text_message_handler(telegram_id)
-    return await _ciclopi_command(bot, update, user_record)
+    return await _ciclopi_command(bot=bot, update=update,
+                                  user_record=user_record, language=language)
 
 
 async def cancel_ciclopi_location(bot, update, user_record):
@@ -577,21 +581,16 @@ async def cancel_ciclopi_location(bot, update, user_record):
     )
 
 
-# The service is currently suspended: code is unreachable of course
-# noinspection PyUnreachableCode,PyUnusedLocal
-async def _ciclopi_command(bot: davtelepot.bot.Bot, update, user_record, sent_message=None,
+async def _ciclopi_command(bot: davtelepot.bot.Bot, update: dict,
+                           user_record: OrderedDict,
+                           language: str,
+                           sent_message=None,
                            show_all=False):
     if ('ciclopi' not in bot.shared_data
             or 'is_working' not in bot.shared_data['ciclopi']
             or not bot.shared_data['ciclopi']['is_working']):
-        return {
-            'text': {
-                'it': "⚠️ Il servizio è momentaneamente sospeso a causa dell'emergenza COVID-19🦠\n"
-                      "#stiamoacasa 🏠",
-                'en': "⚠️ The service is currently suspended due to COVID-19 emergency.🦠\n"
-                      "#stayathome 🏠"
-            }
-        }
+        return bot.get_message('ciclopi', 'service_unavailable',
+                               language=language)
     chat_id = update['chat']['id']
     default_stations_to_show = 5
     stations = []
@@ -1102,7 +1101,9 @@ async def _ciclopi_button_limit(bot, update, user_record, arguments):
     return result, text, reply_markup
 
 
-async def _ciclopi_button_show(bot, update, user_record, arguments):
+async def _ciclopi_button_show(bot: davtelepot.bot.Bot, update: dict,
+                               user_record: OrderedDict, language: str,
+                               arguments: list):
     result, text, reply_markup = '', '', None
     fake_update = update['message']
     fake_update['from'] = update['from']
@@ -1115,7 +1116,8 @@ async def _ciclopi_button_show(bot, update, user_record, arguments):
             show_all=(
                 True if len(arguments) == 1 and arguments[0] == 'all'
                 else False
-            )
+            ),
+            language=language
         )
     )
     return result, text, reply_markup
@@ -1544,7 +1546,9 @@ _ciclopi_button_routing_table = {
 }
 
 
-async def _ciclopi_button(bot, update, user_record, data):
+async def _ciclopi_button(bot: davtelepot.bot.Bot, update: dict,
+                          user_record: OrderedDict, language: str,
+                          data: list):
     command, *arguments = data
     if command in _ciclopi_button_routing_table:
         handler = _ciclopi_button_routing_table[command]
@@ -1553,6 +1557,7 @@ async def _ciclopi_button(bot, update, user_record, data):
             for name, value in {'bot': bot,
                                 'update': update,
                                 'user_record': user_record,
+                                'language': language,
                                 'arguments': arguments
                                 }.items()
             if name in inspect.signature(handler).parameters
@@ -1578,6 +1583,7 @@ async def check_service_status(bot: davtelepot.bot.Bot,
 
     Store service status in `bot.shared_data['ciclopi']`.
     """
+    # TODO: adapt interval to events (check 1 minute after first
     if isinstance(interval, datetime.timedelta):
         interval = interval.total_seconds()
     while 1:
@@ -1658,9 +1664,15 @@ def init(telegram_bot: davtelepot.bot.Bot, ciclopi_messages=None,
                           ),
                           help_section=telegram_bot.messages['ciclopi']['help'],
                           authorization_level='everybody')
-    async def ciclopi_command(bot, update, user_record):
-        return await _ciclopi_command(bot, update, user_record)
+    async def ciclopi_command(bot: davtelepot.bot.Bot, update: dict,
+                              user_record: OrderedDict, language: str):
+        return await _ciclopi_command(bot=bot, update=update,
+                                      user_record=user_record, language=language)
 
     @telegram_bot.button(prefix='ciclopi:///', separator='|', authorization_level='everybody')
-    async def ciclopi_button(bot, update, user_record, data):
-        return await _ciclopi_button(bot=bot, update=update, user_record=user_record, data=data)
+    async def ciclopi_button(bot: davtelepot.bot.Bot, update: dict,
+                             user_record: OrderedDict, language: str,
+                             data: list):
+        return await _ciclopi_button(bot=bot, update=update,
+                                     user_record=user_record, language=language,
+                                     data=data)
