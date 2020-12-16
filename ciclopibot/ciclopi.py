@@ -1479,7 +1479,7 @@ async def _ciclopi_button_favourites(bot, update, user_record, arguments):
     return result, text, reply_markup
 
 
-async def _ciclopi_button_setpos(bot, update, user_record):
+async def _ciclopi_button_setpos(bot, update, user_record, language):
     result, text, reply_markup = '', '', None
     chat_id = (
         update['message']['chat']['id'] if 'message' in update
@@ -1492,7 +1492,8 @@ async def _ciclopi_button_setpos(bot, update, user_record):
     )
     bot.set_individual_location_handler(
         await async_wrapper(
-            set_ciclopi_location
+            set_ciclopi_location,
+            language=language
         ),
         update
     )
