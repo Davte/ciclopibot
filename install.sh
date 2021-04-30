@@ -7,10 +7,10 @@ configuration_file="$this_script_directory/my_config.sh";
 passwords_file="$this_script_directory/ciclopibot/data/passwords.py";
 
 # Create intermediate path for passwords_file, if it does not exist
-mkdir -r "$this_script_directory/ciclopibot/data/";
+mkdir -p "$this_script_directory/ciclopibot/data/";
 
-read -r "Enter a name for your virtual environment
-           " venv_name;
+echo "Enter a name for your virtual environment";
+read venv_name;
 python3 -m venv "$venv_name";
 "$venv_name"/bin/pip install -r "$this_script_directory/requirements.txt";
 
